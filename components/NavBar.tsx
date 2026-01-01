@@ -4,20 +4,23 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
+type NavLink = {
+  href: string;
+  label?: string;
+  external?: boolean;
+  iconSrc?: string;
+  ariaLabel?: string;
+};
+
 export const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  const navLinks = [
+  const navLinks: NavLink[] = [
     { href: "/models", label: "Models" },
     { href: "/events", label: "Events" },
     { href: "/changelog", label: "Changelog" },
-    {
-      href: "https://ko-fi.com/chrisppa",
-      label: "Sponsor",
-      external: true,
-    },
     {
       href: "https://twitter.com/kristuryasiima",
       label: "Twitter (X)",
@@ -29,6 +32,13 @@ export const NavBar = () => {
       external: true,
     },
     { href: "https://github.com/chrisppa", label: "GitHub", external: true },
+    // Ko‑fi sponsor icon as the last item
+    {
+      href: "https://ko-fi.com/chrisppa",
+      external: true,
+      iconSrc: "https://github.githubassets.com/assets/ko_fi-53a60c17e75c.svg",
+      ariaLabel: "Ko‑fi (Sponsor)",
+    },
   ];
 
   return (
@@ -47,13 +57,22 @@ export const NavBar = () => {
             <li key={link.href}>
               <Link
                 href={link.href}
-                className="hover:opacity-70 transition-opacity"
+                className="hover:opacity-70 transition-opacity inline-flex items-center"
+                aria-label={link.ariaLabel || link.label}
                 {...(link.external && {
                   target: "_blank",
                   rel: "noopener noreferrer",
                 })}
               >
-                {link.label}
+                {link.iconSrc ? (
+                  <img
+                    src={link.iconSrc}
+                    alt={link.ariaLabel || link.label || "Icon"}
+                    className="h-5 w-auto xl:h-6"
+                  />
+                ) : (
+                  link.label
+                )}
               </Link>
             </li>
           ))}
@@ -86,12 +105,21 @@ export const NavBar = () => {
                   href={link.href}
                   className="block px-4 py-3 hover:bg-gray-50 transition-colors text-sm font-semibold"
                   onClick={() => setIsMenuOpen(false)}
+                  aria-label={link.ariaLabel || link.label}
                   {...(link.external && {
                     target: "_blank",
                     rel: "noopener noreferrer",
                   })}
                 >
-                  {link.label}
+                  {link.iconSrc ? (
+                    <img
+                      src={link.iconSrc}
+                      alt={link.ariaLabel || link.label || "Icon"}
+                      className="h-7 w-auto"
+                    />
+                  ) : (
+                    link.label
+                  )}
                 </Link>
               </li>
             ))}
