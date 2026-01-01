@@ -1,0 +1,5 @@
+# Code owners for review routing. Enable "Require review from Code Owners" in
+# branch protection to enforce reviews before merging.
+
+* @chrisppa
+
