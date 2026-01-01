@@ -1,36 +1,121 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AniMind — Anime Character Generator (WIP)
+
+AniMind is an early‑stage, UI‑first Next.js project for anime character generation. The current focus is on getting the interface right for generating images with existing models, while leaving room to expand into user‑provided LoRAs and training workflows in the future.
+
+Status: actively evolving, pre‑alpha. Expect breaking changes while the core UX and component structure solidify.
+
+## What’s Here Today
+
+- Generation UI: tabs for txt2img, img2img, and inpainting with prompt fields, steps/CFG/seed inputs, and a model/LoRA selector.
+- 3D Hero: a mecha GLB rendered in the background using @react-three/fiber and @react-three/drei.
+- Sample Media: optional “gallery cloud” layout for showcasing generated images (disabled by default), plus a utility script to autogenerate image exports.
+
+Note: This repo is currently front‑end focused. Hook the “Start Generate” button to your inference backend to perform actual generation. The UI is structured so you can wire up your API later without large refactors.
+
+## Roadmap (High‑Level Intent)
+
+These items are not implemented yet; they guide where the project is headed:
+
+- User LoRAs: allow uploads, selection, and basic metadata management.
+- LoRA Training: dataset prep, training jobs, and model versioning (likely via a background queue and storage).
+- Job Control: status/progress, history, and reproducible settings.
+- Auth & Quotas: user accounts, credits/limits, and moderation.
+- Share & Showcase: curated gallery with prompts/settings.
+
+## Tech Stack
+
+- Next.js (App Router), React 19
+- Tailwind CSS v4
+- Three.js via @react-three/fiber and @react-three/drei
+- class‑variance‑authority, tailwind‑merge, react‑rough‑notation, lucide‑react
+
+## Project Structure (Highlights)
+
+- `app/` — app router entry points and global styles
+  - `app/page.tsx` — home page composition (NavBar + Hero)
+  - `app/layout.tsx` — fonts, theme, and global CSS
+- `components/`
+  - `Hero.tsx` — main generation UI and 3D hero canvas
+  - `NavBar.tsx` — simple header
+  - `ui/` — shared UI (e.g., `button.tsx`, `MaxWidthWrapper.tsx`, optional `GalleryCloud.tsx`)
+- `public/`
+  - `3D/` — GLB model and generated React component (`Mecha.jsx`)
+  - `images/` — sample images and `index.ts` for named imports
+  - `fonts/` — local fonts and font loader
+- `generateImageIndex.js` — regenerates `public/images/index.ts` for easy imports
+- `next.config.ts` — includes `transpilePackages: ['three']` for R3F compatibility
 
 ## Getting Started
 
-First, run the development server:
+Requirements: Node.js 18+ recommended
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Build and start:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## Using the UI (Current Flow)
 
-To learn more about Next.js, take a look at the following resources:
+1. Pick a tab: txt2img, img2img, or inpainting (UI placeholders are present for all three).
+2. Fill prompts: positive and negative prompt text areas.
+3. Tune settings: steps, CFG scale, and seed.
+4. Choose a model: switch between base/LoRA options in the dropdown.
+5. Click “Start Generate”: wire this to your backend API to kick off generation and return an image.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The UI is intentionally decoupled from any specific inference service. You can integrate a local server (e.g., ComfyUI workflow API), a hosted provider, or your own service.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Optional: Sample Gallery Cloud
 
-## Deploy on Vercel
+The `GalleryCloud` component displays scrolling columns of images.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Add or replace images under `public/images/`.
+- Run `node generateImageIndex.js` to regenerate `public/images/index.ts` (named exports for each image file).
+- Import and render `GalleryCloud` inside `Hero.tsx` to enable it.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 3D Model Notes
+
+- The hero loads a GLB via `useGLTF`. Keep static file paths aligned with the `public/` directory structure.
+- If you see an error like “Could not load /mecha-transformed.glb… 404 Not Found”, make sure the path includes the subfolder:
+  - `useGLTF("/3D/mecha-transformed.glb")`
+  - `useGLTF.preload("/3D/mecha-transformed.glb")`
+
+## Development Tips
+
+- Asset Imports: Static files in `public/` are served from the site root (`/`). Subfolders matter and paths are case‑sensitive.
+- Three.js: Versions of `three`, `@react-three/fiber`, and `@react-three/drei` should remain compatible; the config transpiles `three` to avoid build issues.
+- Styling: Tailwind CSS v4 is enabled via `app/globals.css` along with custom CSS variables.
+
+## Attribution & Licenses
+
+- 3D model: “Mecha Girl Warrior” by Chenchanchong — CC‑BY‑4.0
+  - Author: https://sketchfab.com/Chenchanchong
+  - Source: https://sketchfab.com/3d-models/mecha-girl-warrior-a6a8b11defe647b38404fc6c3df50f01
+  - License: http://creativecommons.org/licenses/by/4.0/
+- Fonts: Druk Condensed (trial files in `public/fonts`) — ensure your usage complies with its license. Inter is loaded via `next/font/google`.
+
+## Contributing / Planning
+
+This is a starting project while the broader plan is being fleshed out. Issues and PRs are welcome for:
+
+- UX refinements, accessibility, and responsive layout tweaks
+- Hooking the “Start Generate” action to a chosen backend
+- Adding plumbing for img2img/inpainting inputs and masks
+- Implementing job status, history, and downloads
+
+If you’re exploring LoRA support, please open a discussion with proposed UX and data‑flow before diving into implementation.
