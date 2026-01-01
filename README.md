@@ -125,3 +125,10 @@ This is a starting project while the broader plan is being fleshed out. Issues a
 - Implementing job status, history, and downloads
 
 If you’re exploring LoRA support, please open a discussion with proposed UX and data‑flow before diving into implementation.
+
+## Governance & Policies
+
+- Code of Conduct: see `CODE_OF_CONDUCT.md`
+- Contributing Guide: see `CONTRIBUTING.md`
+- Security Policy: see `SECURITY.md` (use the private advisory link for vulnerabilities)
+- License: MIT (see `LICENSE`)
