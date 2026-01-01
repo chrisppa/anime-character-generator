@@ -93,6 +93,16 @@ const Footer = () => {
               <ul className="space-y-2 font-bold uppercase text-sm">
                 <li>
                   <a
+                    href="https://ko-fi.com/chrisppa"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-yellow-400 cursor-pointer transition-colors inline-block"
+                  >
+                    Ko‑fi (Sponsor)
+                  </a>
+                </li>
+                <li>
+                  <a
                     href="https://discord.com/invite/civitai"
                     target="_blank"
                     rel="noopener noreferrer"

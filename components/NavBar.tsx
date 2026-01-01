@@ -14,6 +14,11 @@ export const NavBar = () => {
     { href: "/events", label: "Events" },
     { href: "/changelog", label: "Changelog" },
     {
+      href: "https://ko-fi.com/chrisppa",
+      label: "Sponsor",
+      external: true,
+    },
+    {
       href: "https://twitter.com/kristuryasiima",
       label: "Twitter (X)",
       external: true,

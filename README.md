@@ -4,6 +4,12 @@ AniMind is an early‑stage, UI‑first Next.js project for anime character gene
 
 Status: actively evolving, pre‑alpha. Expect breaking changes while the core UX and component structure solidify.
 
+## Sponsor
+
+If you find this project useful and want to support development, you can sponsor via Ko‑fi:
+
+[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/chrisppa)
+
 ## What’s Here Today
 
 - Generation UI: tabs for txt2img, img2img, and inpainting with prompt fields, steps/CFG/seed inputs, and a model/LoRA selector.
