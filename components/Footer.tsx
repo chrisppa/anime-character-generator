@@ -96,15 +96,14 @@ const Footer = () => {
                     href="https://ko-fi.com/chrisppa"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-yellow-400 cursor-pointer transition-colors inline-flex items-center gap-2"
+                    className="inline-block cursor-pointer transition-opacity hover:opacity-80"
                     aria-label="Ko‑fi (Sponsor)"
                   >
                     <img
                       src="https://ko-fi.com/img/githubbutton_sm.svg"
                       alt="Ko‑fi"
-                      className="h-4 w-auto"
+                      className="h-6 w-auto md:h-7"
                     />
-                    <span>Ko‑fi (Sponsor)</span>
                   </a>
                 </li>
                 <li>
