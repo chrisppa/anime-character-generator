@@ -107,6 +107,40 @@ The `GalleryCloud` component displays scrolling columns of images.
 - Three.js: Versions of `three`, `@react-three/fiber`, and `@react-three/drei` should remain compatible; the config transpiles `three` to avoid build issues.
 - Styling: Tailwind CSS v4 is enabled via `app/globals.css` along with custom CSS variables.
 
+## Backend MVP (Built‑in)
+
+The repo includes a minimal backend using Next.js route handlers so you can run end‑to‑end generation without a separate service.
+
+What’s included
+- Prisma + Postgres schema: `prisma/schema.prisma`
+- R2 (S3‑compatible) signed uploads/reads: `lib/r2.ts`
+- Pluggable inference providers (Runware or fal.ai): `lib/inference/*`
+- API routes:
+  - `POST /api/lora/sign` → presigned PUT for LoRA upload
+  - `POST /api/lora/register` → save LoRA metadata to DB
+  - `POST /api/jobs/submit` → create job + submit to provider
+  - `GET /api/jobs/:id/status` → poll provider once and persist
+
+Setup (local)
+1) Copy envs: `cp .env.example .env.local` and fill values
+   - `DATABASE_URL` (Neon Postgres)
+   - `INFERENCE_PROVIDER=runware` (or `fal`)
+   - `RUNWARE_API_KEY` or `FAL_KEY`
+   - `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_PUBLIC_BASE_URL`
+2) Install deps: `npm install`
+3) Generate DB client: `npm run prisma:generate`
+4) Create tables: `npm run prisma:migrate` (or `npm run prisma:push`)
+5) Run dev: `npm run dev`
+
+Basic flow
+1) Upload LoRA: `POST /api/lora/sign` → PUT file to `uploadUrl` → `POST /api/lora/register`
+2) Submit job: `POST /api/jobs/submit { prompt, type: "txt2img", loraId }`
+3) Poll status: `GET /api/jobs/{jobId}/status` → returns `status` and `imageUrl` when done
+
+Notes
+- Auth is optional for MVP; userId fields are nullable. You can add Auth.js later.
+- Providers use placeholder model routes; pick Runware/fal and adjust model IDs as needed.
+
 ## Attribution & Licenses
 
 - 3D model: “Mecha Girl Warrior” by Chenchanchong — CC‑BY‑4.0

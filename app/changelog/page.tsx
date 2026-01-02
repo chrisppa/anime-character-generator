@@ -71,6 +71,49 @@ export default function Changelog(){
         </div>
 
         {/* Update Logs */}
+
+        <UpdateEntry 
+          title="Backend MVP scaffolding (API, Prisma, R2, Inference)" 
+          date="Jan 2, 2026" 
+          category="PLATFORM" 
+          tag="FEATURE"
+        >
+          <p>Initial backend added to the repository — no separate service required for the MVP. It includes a Postgres schema with Prisma, Cloudflare R2 signed uploads, and a pluggable inference layer (Runware / fal.ai) with basic job submission and status polling.</p>
+
+          <div className="space-y-3 md:space-y-4 pt-3 md:pt-4 border-t-2 border-black/5">
+            <h4 className="text-[8px] md:text-[9px] uppercase tracking-widest text-black font-black">What’s new:</h4>
+            <ul className="space-y-3 md:space-y-4">
+              <li className="flex gap-2 md:gap-3">
+                <span className="text-yellow-500 font-black text-sm md:text-base shrink-0">•</span>
+                <div className="min-w-0">
+                  <strong className="block uppercase text-[10px] md:text-[11px] font-bold">API routes</strong>
+                  <span className="text-gray-500 text-xs md:text-sm">LoRA upload sign/register, job submit, and job status polling.</span>
+                </div>
+              </li>
+              <li className="flex gap-2 md:gap-3">
+                <span className="text-yellow-500 font-black text-sm md:text-base shrink-0">•</span>
+                <div className="min-w-0">
+                  <strong className="block uppercase text-[10px] md:text-[11px] font-bold">Storage + data</strong>
+                  <span className="text-gray-500 text-xs md:text-sm">Cloudflare R2 for LoRAs and outputs, Postgres via Prisma for Users/Loras/Jobs.</span>
+                </div>
+              </li>
+              <li className="flex gap-2 md:gap-3">
+                <span className="text-yellow-500 font-black text-sm md:text-base shrink-0">•</span>
+                <div className="min-w-0">
+                  <strong className="block uppercase text-[10px] md:text-[11px] font-bold">Inference abstraction</strong>
+                  <span className="text-gray-500 text-xs md:text-sm">Switch between providers without changing the client API.</span>
+                </div>
+              </li>
+              <li className="flex gap-2 md:gap-3">
+                <span className="text-yellow-500 font-black text-sm md:text-base shrink-0">•</span>
+                <div className="min-w-0">
+                  <strong className="block uppercase text-[10px] md:text-[11px] font-bold">Docs & env</strong>
+                  <span className="text-gray-500 text-xs md:text-sm">Added `.env.example` and backend notes for quick setup.</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </UpdateEntry>
         <UpdateEntry 
           title="Changes to Generator Images in the Feed" 
           date="Dec 30, 2025" 
