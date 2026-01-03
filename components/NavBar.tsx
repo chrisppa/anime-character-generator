@@ -16,6 +16,7 @@ type NavLink = {
 
 export const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { data: session, status } = useSession();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -85,24 +86,53 @@ export const NavBar = () => {
 
         {/* Desktop Auth */}
         {status === "authenticated" ? (
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-3 relative">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             {session?.user?.image && (
-              <img
-                src={session.user.image}
-                alt={session.user.name || "avatar"}
-                className="w-8 h-8 rounded-full border-2 border-black object-cover"
-              />
+              <button
+                onClick={() => setIsUserMenuOpen((v) => !v)}
+                className="rounded-full border-2 border-black focus:outline-none focus:ring-2 focus:ring-black/20"
+                aria-haspopup="menu"
+                aria-expanded={isUserMenuOpen}
+              >
+                <img
+                  src={session.user.image}
+                  alt={session.user.name || "avatar"}
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+              </button>
             )}
             {session?.user?.name && (
-              <span className="text-sm font-semibold max-w-[160px] truncate">{session.user.name}</span>
+              <button
+                onClick={() => setIsUserMenuOpen((v) => !v)}
+                className="text-sm font-semibold max-w-[160px] truncate"
+                aria-haspopup="menu"
+                aria-expanded={isUserMenuOpen}
+              >
+                {session.user.name}
+              </button>
             )}
-            <button
-              onClick={() => signOut()}
-              className="bg-white border-2 border-black px-4 py-2 rounded-full font-bold text-sm hover:bg-yellow-100 transition-colors cursor-pointer"
-            >
-              Sign out
-            </button>
+            {/* Dropdown */}
+            {isUserMenuOpen && (
+              <div className="absolute top-full right-0 mt-2 w-40 bg-white border-2 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] z-50">
+                <Link
+                  href="/profile"
+                  className="block px-3 py-2 text-sm hover:bg-gray-100"
+                  onClick={() => setIsUserMenuOpen(false)}
+                >
+                  Profile
+                </Link>
+                <button
+                  onClick={() => {
+                    setIsUserMenuOpen(false);
+                    signOut();
+                  }}
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
+                >
+                  Sign out
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <button
@@ -127,6 +157,26 @@ export const NavBar = () => {
       {isMenuOpen && (
         <div className="lg:hidden border-t border-gray-200">
           <ul className="flex flex-col space-y-1 py-4">
+            {status === "authenticated" && (
+              <li className="px-4 pb-2">
+                <div className="flex items-center gap-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {session?.user?.image && (
+                    <img
+                      src={session.user.image}
+                      alt={session.user.name || "avatar"}
+                      className="w-8 h-8 rounded-full border-2 border-black object-cover"
+                    />
+                  )}
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold truncate">{session?.user?.name || "Signed in"}</div>
+                    {session?.user?.email && (
+                      <div className="text-[10px] text-gray-500 truncate">{session.user.email}</div>
+                    )}
+                  </div>
+                </div>
+              </li>
+            )}
             {navLinks.map((link) => (
               <li key={link.href}>
                 <Link
