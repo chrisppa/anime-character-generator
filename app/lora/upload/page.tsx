@@ -114,8 +114,8 @@ export default function LoraUploadPage() {
       if (!regRes.ok) throw new Error(reg?.error || "Register failed");
       setCreatedId(reg.id);
       setMessage("LoRA uploaded and registered successfully.");
-    } catch (e: any) {
-      setMessage(e.message || "Upload failed");
+    } catch (e: unknown) {
+      setMessage(e instanceof Error ? e.message : "Upload failed");
     } finally {
       setBusy(false);
     }

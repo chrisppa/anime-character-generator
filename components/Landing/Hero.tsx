@@ -25,7 +25,7 @@ export const Hero = () => {
   useEffect(() => {
     if (!jobId) return;
     // Simple polling loop every 3s
-    pollRef.current && clearInterval(pollRef.current);
+    if (pollRef.current) clearInterval(pollRef.current);
     pollRef.current = setInterval(async () => {
       try {
         const res = await fetch(`/api/jobs/${jobId}/status`);
@@ -43,7 +43,7 @@ export const Hero = () => {
           pollRef.current = null;
           setSubmitting(false);
         }
-      } catch (e) {
+      } catch (_e) {
         // ignore transient errors during polling
       }
     }, 3000);
@@ -93,9 +93,9 @@ export const Hero = () => {
       .then((r) => r.json())
       .then((list) => {
         if (Array.isArray(list)) {
-          const opts = list.map((l: any) => ({
+          const opts = list.map((l: { id: string; name: string; nsfw?: boolean }) => ({
             label: `${l.name}${l.nsfw ? " • NSFW" : ""}`,
-            value: l.id as string,
+            value: l.id,
           }));
           setLoraOptions(opts);
         }

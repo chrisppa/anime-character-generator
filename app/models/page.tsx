@@ -127,9 +127,10 @@ export default function ModelLibrary() {
       .then((r) => r.json())
       .then((list) => {
         if (!Array.isArray(list)) return;
-        const items: ModelItem[] = list.map((l: any) => ({
+        type ApiLora = { id: string; name: string; coverUrl?: string | null };
+        const items: ModelItem[] = (list as ApiLora[]).map((l) => ({
           id: l.id,
-          src: l.coverUrl || (models.not_found as StaticImageData),
+          src: (l.coverUrl as string | undefined) || (models.not_found as StaticImageData),
           name: l.name,
           type: "LORA",
         }));
