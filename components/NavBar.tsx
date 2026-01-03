@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
@@ -71,10 +72,13 @@ export const NavBar = () => {
                 })}
               >
                 {link.iconSrc ? (
-                  <img
+                  <Image
                     src={link.iconSrc}
                     alt={link.ariaLabel || link.label || "Icon"}
+                    width={24}
+                    height={24}
                     className="h-5 w-auto xl:h-6"
+                    unoptimized
                   />
                 ) : (
                   link.label
@@ -93,7 +97,6 @@ export const NavBar = () => {
         {/* Desktop Auth */}
         {status === "authenticated" ? (
           <div className="hidden lg:flex items-center gap-3 relative">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             {session?.user?.image && (
               <button
                 onClick={() => setIsUserMenuOpen((v) => !v)}
@@ -101,10 +104,13 @@ export const NavBar = () => {
                 aria-haspopup="menu"
                 aria-expanded={isUserMenuOpen}
               >
-                <img
+                <Image
                   src={session.user.image}
                   alt={session.user.name || "avatar"}
+                  width={32}
+                  height={32}
                   className="w-8 h-8 rounded-full object-cover"
+                  unoptimized
                 />
               </button>
             )}
@@ -166,12 +172,14 @@ export const NavBar = () => {
             {status === "authenticated" && (
               <li className="px-4 pb-2">
                 <div className="flex items-center gap-3">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   {session?.user?.image && (
-                    <img
+                    <Image
                       src={session.user.image}
                       alt={session.user.name || "avatar"}
+                      width={32}
+                      height={32}
                       className="w-8 h-8 rounded-full border-2 border-black object-cover"
+                      unoptimized
                     />
                   )}
                   <div className="min-w-0">
@@ -196,10 +204,13 @@ export const NavBar = () => {
                   })}
                 >
                   {link.iconSrc ? (
-                    <img
+                    <Image
                       src={link.iconSrc}
                       alt={link.ariaLabel || link.label || "Icon"}
+                      width={28}
+                      height={28}
                       className="h-7 w-auto"
+                      unoptimized
                     />
                   ) : (
                     link.label

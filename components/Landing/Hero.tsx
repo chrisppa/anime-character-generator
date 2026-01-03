@@ -3,6 +3,7 @@ import { RoughNotation } from "react-rough-notation";
 import { useEffect, useRef, useState } from "react";
 import { Sparkles } from "lucide-react";
 import { ModelSelect } from "@/components/ui/model-select";
+import Image from "next/image";
 
 export const Hero = () => {
   const [activeTab, setActiveTab] = useState("txt2img");
@@ -43,7 +44,7 @@ export const Hero = () => {
           pollRef.current = null;
           setSubmitting(false);
         }
-      } catch (_e) {
+      } catch {
         // ignore transient errors during polling
       }
     }, 3000);
@@ -299,8 +300,16 @@ export const Hero = () => {
               )}
               {imageUrl && (
                 <div className="mt-3">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={imageUrl} alt="result" className="border border-black max-h-96 object-contain" />
+                  <div className="relative border border-black h-96 w-full">
+                    <Image
+                      src={imageUrl}
+                      alt="result"
+                      fill
+                      className="object-contain"
+                      sizes="100vw"
+                      unoptimized
+                    />
+                  </div>
                 </div>
               )}
             </div>

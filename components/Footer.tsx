@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 const Footer = () => {
   return (
@@ -99,10 +100,13 @@ const Footer = () => {
                     className="inline-block cursor-pointer transition-opacity hover:opacity-80"
                     aria-label="Ko‑fi (Sponsor)"
                   >
-                    <img
+                    <Image
                       src="https://ko-fi.com/img/githubbutton_sm.svg"
                       alt="Ko‑fi"
+                      width={110}
+                      height={28}
                       className="h-6 w-auto md:h-7"
+                      unoptimized
                     />
                   </a>
                 </li>

@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import SignInButton from "@/components/SignInButton";
 import { env } from "@/lib/env";
+import Image from "next/image";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -32,9 +33,15 @@ export default async function ProfilePage() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="bg-white border-4 border-black p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex items-center gap-4">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           {session.user.image && (
-            <img src={session.user.image} alt={session.user.name || "avatar"} className="w-14 h-14 rounded-full border-2 border-black object-cover" />
+            <Image
+              src={session.user.image}
+              alt={session.user.name || "avatar"}
+              width={56}
+              height={56}
+              className="w-14 h-14 rounded-full border-2 border-black object-cover"
+              unoptimized
+            />
           )}
           <div className="min-w-0">
             <div className="font-druk-condensed text-3xl uppercase leading-none">{session.user.name || "User"}</div>
@@ -53,9 +60,14 @@ export default async function ProfilePage() {
                 <div key={l.id} className="bg-white border-2 border-black p-4 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
                   {/* Cover */}
                   <div className="relative aspect-3/2 overflow-hidden border-2 border-black mb-3 bg-gray-50">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     {l.coverKey && base ? (
-                      <img src={`${base}/${encodeURIComponent(l.coverKey)}`} alt={l.name} className="w-full h-full object-cover" />
+                      <Image
+                        src={`${base}/${encodeURIComponent(l.coverKey)}`}
+                        alt={l.name}
+                        fill
+                        className="object-cover"
+                        sizes="100vw"
+                      />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-xs text-gray-500">No cover</div>
                     )}
@@ -94,4 +106,3 @@ export default async function ProfilePage() {
     </div>
   );
 }
-

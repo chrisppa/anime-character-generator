@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
+import Image from "next/image";
 export const dynamic = "force-dynamic";
 
 export default async function EventDetail({ params }: { params: Promise<Record<string, string>> }) {
@@ -16,8 +17,7 @@ export default async function EventDetail({ params }: { params: Promise<Record<s
       <div className="max-w-4xl mx-auto bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
         {coverUrl && (
           <div className="relative aspect-video border-b-4 border-black">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={coverUrl} alt={e.title} className="w-full h-full object-cover" />
+            <Image src={coverUrl} alt={e.title} fill className="object-cover" sizes="100vw" />
           </div>
         )}
         <div className="p-6">
