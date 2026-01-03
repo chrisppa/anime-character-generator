@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
         sizeBytes,
         trainingDataKey: body.trainingDataKey ?? null,
         trainingDataSizeBytes: body.trainingDataSizeBytes ?? null,
+        coverKey: body.coverKey ?? null,
       },
     });
     return Response.json(lora);

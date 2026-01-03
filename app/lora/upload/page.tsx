@@ -11,6 +11,7 @@ export default function LoraUploadPage() {
   const [modelType, setModelType] = useState("LORA");
   const [baseModel, setBaseModel] = useState("");
   const [trainingZip, setTrainingZip] = useState<File | null>(null);
+  const [cover, setCover] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [createdId, setCreatedId] = useState<string | null>(null);
@@ -24,6 +25,11 @@ export default function LoraUploadPage() {
   function onPickTraining(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] || null;
     setTrainingZip(f);
+  }
+
+  function onPickCover(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0] || null;
+    setCover(f);
   }
 
   async function onUpload() {
@@ -69,6 +75,21 @@ export default function LoraUploadPage() {
         trainingDataSizeBytes = trainingZip.size;
       }
 
+      // 2c) Optional cover image upload
+      let coverKey: string | undefined;
+      if (cover) {
+        const cSignRes = await fetch("/api/lora/sign", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ filename: cover.name, contentType: cover.type || "image/png", kind: "cover" }),
+        });
+        const cSign = await cSignRes.json();
+        if (!cSignRes.ok) throw new Error(cSign?.error || "Cover sign failed");
+        const putC = await fetch(cSign.uploadUrl, { method: "PUT", headers: { "Content-Type": cover.type || "image/png" }, body: cover });
+        if (!putC.ok) throw new Error(`Cover upload failed: ${await putC.text()}`);
+        coverKey = cSign.key;
+      }
+
       // 3) Register in DB with metadata
       const regRes = await fetch("/api/lora/register", {
         method: "POST",
@@ -84,6 +105,7 @@ export default function LoraUploadPage() {
           sizeBytes: file.size,
           trainingDataKey,
           trainingDataSizeBytes,
+          coverKey,
         }),
       });
       const reg = await regRes.json();
@@ -173,6 +195,14 @@ export default function LoraUploadPage() {
             <input type="file" accept=".zip" onChange={onPickTraining} className="block w-full" />
             {trainingZip && (
               <div className="mt-1 text-xs text-gray-600">{trainingZip.name} • {(trainingZip.size / (1024 * 1024)).toFixed(2)} MB</div>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-xs font-mono uppercase text-gray-500 mb-1">Cover Image (optional)</label>
+            <input type="file" accept="image/*" onChange={onPickCover} className="block w-full" />
+            {cover && (
+              <div className="mt-1 text-xs text-gray-600">{cover.name} • {(cover.size / (1024 * 1024)).toFixed(2)} MB</div>
             )}
           </div>
 

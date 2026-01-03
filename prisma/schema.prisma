@@ -29,6 +29,7 @@ model Lora {
   sizeBytes Int?
   trainingDataKey String?
   trainingDataSizeBytes Int?
+  coverKey  String?
   userId    String?
   user      User?    @relation(fields: [userId], references: [id])
   jobs      Job[]

@@ -10,7 +10,7 @@ interface ModelStats {
 }
 
 interface ModelCardProps {
-  imgSrc: StaticImageData;
+  imgSrc: StaticImageData | string;
   name: string;
   type: string;
   stats: ModelStats;
@@ -22,7 +22,7 @@ const ModelCard = ({ imgSrc, name, type, stats }: ModelCardProps) => {
       {/* --- Image Preview Section --- */}
       <div className="relative aspect-3/4 overflow-hidden border-b-2 md:border-b-[3px] border-black">
         <Image
-          src={imgSrc}
+          src={imgSrc as any}
           alt={name}
           fill
           className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500 scale-100 group-hover:scale-105"
@@ -110,7 +110,7 @@ type FilterType = "ALL" | "CHECKPOINT" | "LORA" | "TEXTUAL-INV" | "V3_SPECIAL";
 
 interface ModelItem {
   id: string;
-  src: StaticImageData;
+  src: StaticImageData | string;
   name: string;
   type: string;
 }
@@ -120,14 +120,33 @@ export default function ModelLibrary() {
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
 
   // Convert the imported object into an array we can loop through
+  const [dynamicLoras, setDynamicLoras] = useState<ModelItem[]>([]);
+
+  useEffect(() => {
+    fetch("/api/lora/list")
+      .then((r) => r.json())
+      .then((list) => {
+        if (!Array.isArray(list)) return;
+        const items: ModelItem[] = list.map((l: any) => ({
+          id: l.id,
+          src: l.coverUrl || (models.not_found as StaticImageData),
+          name: l.name,
+          type: "LORA",
+        }));
+        setDynamicLoras(items);
+      })
+      .catch(() => {});
+  }, []);
+
   const modelList: ModelItem[] = useMemo(() => {
-    return Object.entries(models).map(([key, src]) => ({
+    const statics = Object.entries(models).map(([key, src]) => ({
       id: key,
       src: src as StaticImageData,
       name: key,
       type: key.includes("lora") ? "LORA" : "CHECKPOINT",
     }));
-  }, []);
+    return [...dynamicLoras, ...statics];
+  }, [dynamicLoras]);
 
   // Generate stats once using useMemo
   const modelsWithStats = useMemo(() => {
