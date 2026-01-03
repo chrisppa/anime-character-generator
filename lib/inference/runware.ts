@@ -29,6 +29,11 @@ export async function submit(params: SubmitParams): Promise<SubmitResult> {
       // width/height/seed may be added later
     },
   };
+  if (params.width) task.parameters.width = params.width;
+  if (params.height) task.parameters.height = params.height;
+  if (params.steps) task.parameters.steps = params.steps;
+  if (params.cfgScale) task.parameters.guidance_scale = params.cfgScale;
+  if (params.seed !== undefined) task.parameters.seed = params.seed;
   if (params.loraUrl) {
     // Placeholder: when docs specify LoRA/adapters param, pass it here
     task.parameters.lora_url = params.loraUrl;

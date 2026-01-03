@@ -6,6 +6,12 @@ export type SubmitParams = {
   loraUrl?: string; // signed URL to safetensors or LoRA ref
   imageUrl?: string; // for img2img/inpainting
   negativePrompt?: string;
+  // optional generation params
+  width?: number;
+  height?: number;
+  steps?: number;
+  cfgScale?: number;
+  seed?: number | string;
 };
 
 export type SubmitResult = {

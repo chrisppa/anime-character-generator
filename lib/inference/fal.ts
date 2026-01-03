@@ -21,6 +21,11 @@ export async function submit(params: SubmitParams): Promise<SubmitResult> {
       negative_prompt: params.negativePrompt,
       // lora urls may be supported depending on the route
       lora_urls: params.loraUrl ? [params.loraUrl] : undefined,
+      width: params.width,
+      height: params.height,
+      steps: params.steps,
+      guidance_scale: params.cfgScale,
+      seed: params.seed,
     },
   };
 

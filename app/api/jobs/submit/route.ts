@@ -6,7 +6,8 @@ import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { prompt, type = "txt2img", loraId, negativePrompt } = await req.json();
+    const body = await req.json();
+    const { prompt, type = "txt2img", loraId, negativePrompt } = body;
     if (!prompt) return new Response(JSON.stringify({ error: "prompt required" }), { status: 400 });
 
     // Resolve LoRA signed URL if provided
@@ -28,7 +29,24 @@ export async function POST(req: NextRequest) {
     });
 
     // Submit to inference provider (fire-and-forget for speed)
-    const result = await inference.submit({ prompt, type, loraUrl, negativePrompt });
+    // Optional numeric params with basic sanitation
+    const width = Number(body.width) || undefined;
+    const height = Number(body.height) || undefined;
+    const steps = Number(body.steps) || undefined;
+    const cfgScale = Number(body.cfgScale) || undefined;
+    const seed = body.seed !== undefined && body.seed !== "" ? Number(body.seed) || body.seed : undefined;
+
+    const result = await inference.submit({
+      prompt,
+      type,
+      loraUrl,
+      negativePrompt,
+      width,
+      height,
+      steps,
+      cfgScale,
+      seed,
+    });
 
     await prisma.job.update({
       where: { id: job.id },

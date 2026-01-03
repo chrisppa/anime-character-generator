@@ -16,6 +16,11 @@ export const Hero = () => {
   const pollRef = useRef<NodeJS.Timeout | null>(null);
   const [loraOptions, setLoraOptions] = useState<{ label: string; value: string }[]>([]);
   const [selectedLora, setSelectedLora] = useState<string | undefined>(undefined);
+  const [steps, setSteps] = useState<number>(28);
+  const [cfgScale, setCfgScale] = useState<number>(7);
+  const [seed, setSeed] = useState<string>("-1");
+  const [width, setWidth] = useState<number>(768);
+  const [height, setHeight] = useState<number>(1024);
 
   useEffect(() => {
     if (!jobId) return;
@@ -57,6 +62,11 @@ export const Hero = () => {
         negativePrompt: negativePrompt || undefined,
         type: activeTab,
         loraId: selectedLora,
+        width,
+        height,
+        steps,
+        cfgScale,
+        seed,
       };
       const res = await fetch("/api/jobs/submit", {
         method: "POST",
@@ -203,7 +213,8 @@ export const Hero = () => {
                     </label>
                     <input
                       type="number"
-                      defaultValue={28}
+                      value={steps}
+                      onChange={(e) => setSteps(Number(e.target.value) || 0)}
                       className="
                         w-full bg-white border border-black px-2 py-1 text-sm font-mono
                         rounded-none
@@ -219,7 +230,8 @@ export const Hero = () => {
                     </label>
                     <input
                       type="number"
-                      defaultValue={7}
+                      value={cfgScale}
+                      onChange={(e) => setCfgScale(Number(e.target.value) || 0)}
                       className="w-full bg-white border border-black px-2 py-1 text-sm font-mono
                       rounded-none
                       focus:rounded-none
@@ -236,12 +248,36 @@ export const Hero = () => {
                   <input
                     type="text"
                     placeholder="-1"
+                    value={seed}
+                    onChange={(e) => setSeed(e.target.value)}
                     className="w-full bg-white border border-black px-2 py-1 text-sm font-mono
                     rounded-none
                     focus:rounded-none
                     focus:outline-none
                     focus:ring-0"
                   />
+                </div>
+
+                {/* Size */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-mono font-bold uppercase text-gray-500">Width</label>
+                    <input
+                      type="number"
+                      value={width}
+                      onChange={(e) => setWidth(Number(e.target.value) || 0)}
+                      className="w-full bg-white border border-black px-2 py-1 text-sm font-mono rounded-none focus:outline-none focus:ring-0"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-mono font-bold uppercase text-gray-500">Height</label>
+                    <input
+                      type="number"
+                      value={height}
+                      onChange={(e) => setHeight(Number(e.target.value) || 0)}
+                      className="w-full bg-white border border-black px-2 py-1 text-sm font-mono rounded-none focus:outline-none focus:ring-0"
+                    />
+                  </div>
                 </div>
 
                 {/* Action Button */}
