@@ -1,6 +1,6 @@
-import NextAuth from "next-auth";
-import GitHub from "next-auth/providers/github";
-import Credentials from "next-auth/providers/credentials";
+import { Auth } from "@auth/nextjs";
+import GitHub from "@auth/core/providers/github";
+import Credentials from "@auth/core/providers/credentials";
 
 const providers = [] as any[];
 if (process.env.AUTH_GITHUB_ID && process.env.AUTH_GITHUB_SECRET) {
@@ -26,7 +26,7 @@ providers.push(
   })
 );
 
-export const authConfig = {
+export const { handlers, auth, signIn, signOut } = Auth({
   secret: process.env.AUTH_SECRET,
   providers,
   debug: process.env.NODE_ENV !== "production",
@@ -36,6 +36,4 @@ export const authConfig = {
       return session;
     },
   },
-} satisfies Parameters<typeof NextAuth>[0];
-
-export const { auth, signIn, signOut } = NextAuth(authConfig);
+});
