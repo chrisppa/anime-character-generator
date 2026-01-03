@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSession, signIn } from "@auth/nextjs/react";
+import { useSession, signIn } from "next-auth/react";
 
 export default function LoraUploadPage() {
   const { status } = useSession();

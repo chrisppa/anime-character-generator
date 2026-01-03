@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
-import { auth } from "@/lib/auth";
+import { auth } from "@/auth";
 import { getSignedGetUrl } from "@/lib/r2";
 import { inference } from "@/lib/inference/provider";
 import { NextRequest } from "next/server";
