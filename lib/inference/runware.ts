@@ -18,12 +18,25 @@ function headers() {
 // Adjust the model and payload as you finalize the chosen model.
 export async function submit(params: SubmitParams): Promise<SubmitResult> {
   const url = RUNWARE_GENERATE_URL;
-  const body: any = {
-    prompt: params.prompt,
+  // Runware expects an array of tasks; we send one imageInference task
+  const task: any = {
+    taskType: "imageInference",
+    input: params.type === "img2img" ? "image" : "text",
     model: RUNWARE_MODEL,
-    loras: params.loraUrl ? [{ url: params.loraUrl, scale: 1.0 }] : undefined,
-    mode: params.type,
+    parameters: {
+      prompt: params.prompt,
+      negative_prompt: params.negativePrompt,
+      // width/height/seed may be added later
+    },
   };
+  if (params.loraUrl) {
+    // Placeholder: when docs specify LoRA/adapters param, pass it here
+    task.parameters.lora_url = params.loraUrl;
+  }
+  if (params.type === "img2img" && params.imageUrl) {
+    task.parameters.image_url = params.imageUrl;
+  }
+  const body = [task];
 
   const res = await fetch(url, {
     method: "POST",
@@ -40,7 +53,8 @@ export async function submit(params: SubmitParams): Promise<SubmitResult> {
   let data: any = {};
   try { data = JSON.parse(text); } catch {}
   console.log("Runware submit ok", data);
-  const jobId = data.id || data.jobId || data.request_id || "";
+  // Response may include an array of tasks; pick the first UUID
+  const jobId = data.taskUUID || data.id || data.jobId || data.request_id || data?.[0]?.taskUUID || "";
   return { providerJobId: jobId, status: "queued" };
 }
 
@@ -55,12 +69,13 @@ export async function getStatus(providerJobId: string): Promise<StatusResult> {
   let data: any = {};
   try { data = JSON.parse(text); } catch {}
   console.log("Runware status", data);
-  const status = (data.status || data.state || "queued").toLowerCase();
-  if (status === "succeeded" || status === "completed") {
-    const imageUrl = data.output?.[0]?.url || data.image_url || data.images?.[0]?.url || undefined;
+  const rawStatus = (data.taskStatus || data.status || data.state || "queued").toString().toLowerCase();
+  const status = rawStatus === "completed" ? "succeeded" : rawStatus as StatusResult["status"];
+  if (status === "succeeded") {
+    const imageUrl = data.output?.images?.[0]?.url || data.output?.[0]?.url || data.image_url || data.images?.[0]?.url || undefined;
     return { status: "succeeded", imageUrl };
   }
-  if (["running", "processing"].includes(status)) return { status: "running" };
-  if (["failed", "error", "canceled"].includes(status)) return { status: "failed", error: data.error || "failed" };
+  if (["running", "processing", "in_progress"].includes(status)) return { status: "running" } as StatusResult;
+  if (["failed", "error", "canceled"].includes(status)) return { status: "failed", error: data.error || data.message || "failed" } as StatusResult;
   return { status: "queued" };
 }

@@ -5,6 +5,7 @@ export type SubmitParams = {
   type: JobType;
   loraUrl?: string; // signed URL to safetensors or LoRA ref
   imageUrl?: string; // for img2img/inpainting
+  negativePrompt?: string;
 };
 
 export type SubmitResult = {
@@ -19,4 +20,3 @@ export type StatusResult = {
   imageUrl?: string;
   error?: string;
 };
-

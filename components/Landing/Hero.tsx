@@ -50,6 +50,7 @@ export const Hero = () => {
       setImageUrl(null);
       const body = {
         prompt: positivePrompt || "1girl, mecha musume, white armor, glowing visor, futuristic city, masterpiece",
+        negativePrompt: negativePrompt || undefined,
         type: activeTab,
       };
       const res = await fetch("/api/jobs/submit", {
