@@ -1,12 +1,11 @@
 import NextAuth from "next-auth";
-import type { NextAuthConfig, NextAuthResult } from "next-auth";
 import GitHub from "next-auth/providers/github";
 import type { Session } from "next-auth";
 
-const providers = [GitHub];
+type NextAuthFn = typeof import("next-auth")["default"];
 
-const config: NextAuthConfig = {
-  providers,
+const config = {
+  providers: [GitHub],
   debug: process.env.NODE_ENV !== "production",
   callbacks: {
     async session({ session, token }: { session: Session; token: Record<string, unknown> }) {
@@ -16,6 +15,6 @@ const config: NextAuthConfig = {
       return session;
     },
   },
-};
+} satisfies Parameters<NextAuthFn>[0];
 
-export const { handlers, auth, signIn, signOut } = (NextAuth as unknown as (c: NextAuthConfig) => NextAuthResult)(config);
+export const { handlers, auth, signIn, signOut } = (NextAuth as unknown as NextAuthFn)(config);
