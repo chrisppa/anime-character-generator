@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
+export const dynamic = "force-dynamic";
 
-export default async function EventDetail({ params }: { params: Promise<{ id: string }> }) {
+export default async function EventDetail({ params }: { params: Promise<Record<string, string>> }) {
   const { id } = await params;
   const e = await prisma.event.findUnique({ where: { id } });
   if (!e) return <div className="min-h-screen p-8">Event not found.</div>;
