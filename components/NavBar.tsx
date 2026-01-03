@@ -82,6 +82,12 @@ export const NavBar = () => {
               </Link>
             </li>
           ))}
+          {/* Admin-only link */}
+          {session?.user?.email === "cturyasiima@gmail.com" && (
+            <li>
+              <Link href="/events/manage" className="hover:opacity-70 transition-opacity">Manage Events</Link>
+            </li>
+          )}
         </ul>
 
         {/* Desktop Auth */}
@@ -201,6 +207,13 @@ export const NavBar = () => {
                 </Link>
               </li>
             ))}
+            {session?.user?.email === "cturyasiima@gmail.com" && (
+              <li>
+                <Link href="/events/manage" className="block px-4 py-3 hover:bg-gray-50 transition-colors text-sm font-semibold" onClick={() => setIsMenuOpen(false)}>
+                  Manage Events
+                </Link>
+              </li>
+            )}
             <li className="px-4 pt-2">
               {status === "authenticated" ? (
                 <button

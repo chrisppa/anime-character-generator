@@ -132,7 +132,7 @@ const EventCard: React.FC<EventCardProps> = ({
   );
 };
 
-type FilterType = "active" | "upcoming" | "archived";
+type FilterType = "all" | "active" | "upcoming" | "archived";
 
 interface EventItem {
   id: string;
@@ -147,7 +147,7 @@ interface EventItem {
 }
 
 export default function EventsArchive() {
-  const [activeFilter, setActiveFilter] = useState<FilterType>("active");
+  const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [items, setItems] = useState<EventItem[]>([]);
 
   useEffect(() => {
@@ -170,14 +170,14 @@ export default function EventsArchive() {
           type: mapType(e.type),
           prizePool: e.prizePool || "—",
           imgSrc: e.coverUrl || articleImages[idx % articleImages.length],
-          href: e.url || null,
+          href: e.url || `/events/${e.id}`,
         }));
         setItems(mapped);
       })
       .catch(() => {});
   }, [activeFilter]);
 
-  const filters: FilterType[] = ["active", "upcoming", "archived"];
+  const filters: FilterType[] = ["all", "active", "upcoming", "archived"];
 
   return (
     <div className="min-h-screen bg-[#E2E2D1] pt-6 md:pt-12 pb-16 md:pb-32 px-3 md:px-6">

@@ -24,7 +24,7 @@ export async function GET(req: Request) {
       };
     })
     .filter((e) => {
-      if (!filter) return true;
+      if (!filter || filter === "all") return true;
       if (filter === "active") return e.status === "Ongoing";
       if (filter === "upcoming") return e.status === "Upcoming";
       if (filter === "archived") return e.status === "Ended";
@@ -63,4 +63,3 @@ export async function POST(req: Request) {
     return new Response(JSON.stringify({ error: e.message || "failed" }), { status: 500 });
   }
 }
-
