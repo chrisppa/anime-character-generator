@@ -216,6 +216,9 @@ export const Hero = () => {
           {(status !== "idle" || imageUrl) && (
             <div className="mt-6 p-4 border-2 border-black bg-white">
               <div className="text-xs font-mono uppercase tracking-widest">Status: {status}</div>
+              {status === "failed" && (
+                <div className="mt-2 text-xs text-red-600">Generation failed. Check server logs for provider error details.</div>
+              )}
               {imageUrl && (
                 <div className="mt-3">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
