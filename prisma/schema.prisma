@@ -19,12 +19,28 @@ model User {
 model Lora {
   id        String   @id @default(uuid())
   name      String
+  description String? @db.Text
+  tags      String[]
+  nsfw      Boolean  @default(false)
+  modelType LoraType @default(LORA)
+  baseModel String?
+  resourceHashes Json?
   fileKey   String   // R2 object key
   sizeBytes Int?
+  trainingDataKey String?
+  trainingDataSizeBytes Int?
   userId    String?
   user      User?    @relation(fields: [userId], references: [id])
   jobs      Job[]
   createdAt DateTime @default(now())
+}
+
+enum LoraType {
+  CHECKPOINT
+  LORA
+  TEXTUAL_INVERSION
+  VAE
+  OTHER
 }
 
 model Job {
@@ -42,6 +58,7 @@ model Job {
   lora           Lora?    @relation(fields: [loraId], references: [id])
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  assets         Asset[]
 }
 
 model Asset {
@@ -51,4 +68,3 @@ model Asset {
   job       Job      @relation(fields: [jobId], references: [id])
   createdAt DateTime @default(now())
 }
-

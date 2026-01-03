@@ -5,6 +5,12 @@ import { useState } from "react";
 export default function LoraUploadPage() {
   const [file, setFile] = useState<File | null>(null);
   const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [tags, setTags] = useState("");
+  const [nsfw, setNsfw] = useState(false);
+  const [modelType, setModelType] = useState("LORA");
+  const [baseModel, setBaseModel] = useState("");
+  const [trainingZip, setTrainingZip] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [createdId, setCreatedId] = useState<string | null>(null);
@@ -13,6 +19,11 @@ export default function LoraUploadPage() {
     const f = e.target.files?.[0] || null;
     setFile(f);
     if (f && !name) setName(f.name.replace(/\.[^.]+$/, ""));
+  }
+
+  function onPickTraining(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0] || null;
+    setTrainingZip(f);
   }
 
   async function onUpload() {
@@ -25,7 +36,7 @@ export default function LoraUploadPage() {
       const signRes = await fetch("/api/lora/sign", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filename: file.name, contentType: file.type || "application/octet-stream" }),
+        body: JSON.stringify({ filename: file.name, contentType: file.type || "application/octet-stream", kind: "loras" }),
       });
       const sign = await signRes.json();
       if (!signRes.ok) throw new Error(sign?.error || "Sign failed");
@@ -41,11 +52,39 @@ export default function LoraUploadPage() {
         throw new Error(`Upload failed: ${txt}`);
       }
 
-      // 3) Register in DB
+      // 2b) Optional training data upload
+      let trainingDataKey: string | undefined;
+      let trainingDataSizeBytes: number | undefined;
+      if (trainingZip) {
+        const tSignRes = await fetch("/api/lora/sign", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ filename: trainingZip.name, contentType: trainingZip.type || "application/zip", kind: "training" }),
+        });
+        const tSign = await tSignRes.json();
+        if (!tSignRes.ok) throw new Error(tSign?.error || "Training data sign failed");
+        const putT = await fetch(tSign.uploadUrl, { method: "PUT", headers: { "Content-Type": trainingZip.type || "application/zip" }, body: trainingZip });
+        if (!putT.ok) throw new Error(`Training data upload failed: ${await putT.text()}`);
+        trainingDataKey = tSign.key;
+        trainingDataSizeBytes = trainingZip.size;
+      }
+
+      // 3) Register in DB with metadata
       const regRes = await fetch("/api/lora/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name || file.name, key: sign.key, sizeBytes: file.size }),
+        body: JSON.stringify({
+          name: name || file.name,
+          description,
+          tags,
+          nsfw,
+          modelType,
+          baseModel,
+          key: sign.key,
+          sizeBytes: file.size,
+          trainingDataKey,
+          trainingDataSizeBytes,
+        }),
       });
       const reg = await regRes.json();
       if (!regRes.ok) throw new Error(reg?.error || "Register failed");
@@ -64,7 +103,7 @@ export default function LoraUploadPage() {
         <h1 className="font-druk-condensed text-4xl uppercase tracking-tight text-black mb-4">Upload LoRA</h1>
         <p className="text-sm text-gray-700 mb-6">Upload a .safetensors LoRA file. It will be stored in R2 and registered in the database. After upload, copy the LoRA ID to use in generation.</p>
 
-        <div className="space-y-4">
+      <div className="space-y-4">
           <div>
             <label className="block text-xs font-mono uppercase text-gray-500 mb-1">Name</label>
             <input
@@ -76,10 +115,64 @@ export default function LoraUploadPage() {
           </div>
 
           <div>
+            <label className="block text-xs font-mono uppercase text-gray-500 mb-1">Description</label>
+            <textarea
+              className="w-full bg-white border border-black p-2 text-sm h-24"
+              placeholder="What does this LoRA do?"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-mono uppercase text-gray-500 mb-1">Tags (comma separated)</label>
+            <input
+              className="w-full bg-white border border-black p-2 text-sm"
+              placeholder="character, anime, style"
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+            />
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div>
+              <label className="block text-xs font-mono uppercase text-gray-500 mb-1">Model Type</label>
+              <select className="bg-white border border-black p-2 text-sm" value={modelType} onChange={(e) => setModelType(e.target.value)}>
+                <option value="CHECKPOINT">Checkpoint</option>
+                <option value="LORA">LoRA</option>
+                <option value="TEXTUAL_INVERSION">Textual Inversion</option>
+                <option value="VAE">VAE</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </div>
+            <div className="flex-1">
+              <label className="block text-xs font-mono uppercase text-gray-500 mb-1">Base Model</label>
+              <input
+                className="w-full bg-white border border-black p-2 text-sm"
+                placeholder="SDXL, SD 1.5, Flux Schnell"
+                value={baseModel}
+                onChange={(e) => setBaseModel(e.target.value)}
+              />
+            </div>
+            <label className="flex items-center gap-2 mt-5">
+              <input type="checkbox" checked={nsfw} onChange={(e) => setNsfw(e.target.checked)} />
+              <span className="text-sm">Mature content</span>
+            </label>
+          </div>
+
+          <div>
             <label className="block text-xs font-mono uppercase text-gray-500 mb-1">File (.safetensors)</label>
             <input type="file" accept=".safetensors" onChange={onPick} className="block w-full" />
             {file && (
               <div className="mt-1 text-xs text-gray-600">{file.name} • {(file.size / (1024 * 1024)).toFixed(2)} MB</div>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-xs font-mono uppercase text-gray-500 mb-1">Training Data (optional .zip)</label>
+            <input type="file" accept=".zip" onChange={onPickTraining} className="block w-full" />
+            {trainingZip && (
+              <div className="mt-1 text-xs text-gray-600">{trainingZip.name} • {(trainingZip.size / (1024 * 1024)).toFixed(2)} MB</div>
             )}
           </div>
 
@@ -109,4 +202,3 @@ export default function LoraUploadPage() {
     </div>
   );
 }
-
