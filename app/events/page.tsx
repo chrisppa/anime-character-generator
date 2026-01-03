@@ -51,7 +51,7 @@ const EventCard: React.FC<EventCardProps> = ({
           className={`absolute inset-0 transition-all duration-700 ${isEnded ? "grayscale contrast-125" : "group-hover:scale-110"}`}
         >
           <Image
-            src={imgSrc as any}
+            src={typeof imgSrc === "string" ? imgSrc : (imgSrc as StaticImageData)}
             alt={title}
             fill
             className="object-cover"

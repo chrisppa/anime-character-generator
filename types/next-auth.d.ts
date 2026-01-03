@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+// Ambient module augmentation for NextAuth session shape
 
 declare module "next-auth" {
   interface Session {
@@ -10,4 +10,3 @@ declare module "next-auth" {
     };
   }
 }
-

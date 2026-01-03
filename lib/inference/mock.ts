@@ -16,6 +16,8 @@ function randomImage() {
 }
 
 export async function submit(_params: SubmitParams): Promise<SubmitResult> {
+  // mark as used for linting purposes
+  void _params;
   const id = `mock-${crypto.randomUUID?.() ?? Math.random().toString(36).slice(2)}`;
   store.set(id, { at: Date.now(), url: randomImage() });
   return { providerJobId: id, status: "queued" };
@@ -28,4 +30,3 @@ export async function getStatus(providerJobId: string): Promise<StatusResult> {
   if (elapsed < 2000) return { status: "running" };
   return { status: "succeeded", imageUrl: job.url };
 }
-

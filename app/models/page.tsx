@@ -22,7 +22,7 @@ const ModelCard = ({ imgSrc, name, type, stats }: ModelCardProps) => {
       {/* --- Image Preview Section --- */}
       <div className="relative aspect-3/4 overflow-hidden border-b-2 md:border-b-[3px] border-black">
         <Image
-          src={imgSrc as any}
+          src={typeof imgSrc === "string" ? imgSrc : (imgSrc as StaticImageData)}
           alt={name}
           fill
           className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500 scale-100 group-hover:scale-105"
