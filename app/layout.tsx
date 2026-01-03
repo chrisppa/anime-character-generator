@@ -4,6 +4,7 @@ import "./globals.css";
 import MaxWidthWrapper from "@/components/ui/MaxWidthWrapper";
 import { NavBar } from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import AppSessionProvider from "@/components/SessionProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -18,11 +19,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${fontInter.variable} ${fontDrukCondensed.variable} ${fontDrukTextWide.variable} ${fontDrukText.variable} antialiased`}>
-        <MaxWidthWrapper>
-          <NavBar />
-          {children}
-        </MaxWidthWrapper>
-        <Footer />
+        <AppSessionProvider>
+          <MaxWidthWrapper>
+            <NavBar />
+            {children}
+          </MaxWidthWrapper>
+          <Footer />
+        </AppSessionProvider>
       </body>
     </html>
   );
