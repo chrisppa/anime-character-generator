@@ -45,7 +45,7 @@ export const GalleryCloud = () => {
     return columns;
   };
 
-  const columns6 = getColumns(6); // Desktop
+  const columns4 = getColumns(4); // Desktop
   const columns3 = getColumns(3); // Tablet
   const columns2 = getColumns(2); // Mobile
 
@@ -123,7 +123,7 @@ export const GalleryCloud = () => {
       {/* Desktop: 6 columns */}
       <div className="relative hidden lg:flex gap-6 px-4 h-full">
         <div className="absolute inset-0 z-10 pointer-events-none" />
-        {renderColumns(columns6)}
+        {renderColumns(columns4)}
       </div>
     </section>
   );
