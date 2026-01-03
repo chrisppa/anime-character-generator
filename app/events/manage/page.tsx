@@ -21,16 +21,13 @@ export default function ManageEventsPage() {
       setMessage(null);
       let coverKey: string | undefined;
       if (cover) {
-        const signRes = await fetch("/api/lora/sign", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ filename: cover.name, contentType: cover.type || "image/png", kind: "eventCover" }),
-        });
-        const sign = await signRes.json();
-        if (!signRes.ok) throw new Error(sign?.error || "Cover sign failed");
-        const put = await fetch(sign.uploadUrl, { method: "PUT", headers: { "Content-Type": cover.type || "image/png" }, body: cover });
-        if (!put.ok) throw new Error(`Cover upload failed: ${await put.text()}`);
-        coverKey = sign.key;
+        const fd = new FormData();
+        fd.append("file", cover);
+        fd.append("kind", "eventCover");
+        const up = await fetch("/api/storage/upload", { method: "POST", body: fd });
+        const upRes = await up.json();
+        if (!up.ok) throw new Error(upRes?.error || "Cover upload failed");
+        coverKey = upRes.key as string;
       }
       const res = await fetch("/api/events", {
         method: "POST",
@@ -102,4 +99,3 @@ export default function ManageEventsPage() {
     </div>
   );
 }
-
