@@ -128,11 +128,23 @@ export default function LoraUploadPage() {
         <p className="text-sm text-gray-700 mb-6">Upload a .safetensors LoRA file. It will be stored in R2 and registered in the database. After upload, copy the LoRA ID to use in generation.</p>
 
         {status !== "authenticated" && (
-          <div className="p-3 border-2 border-black bg-yellow-50 mb-4">
-            <div className="text-sm mb-2">Please sign in to upload LoRAs.</div>
-            <button onClick={() => signIn("github")} className="px-4 py-2 border-2 border-black bg-white hover:bg-gray-100 text-sm font-bold">
-              Sign in with GitHub
-            </button>
+          <div className="p-3 border-2 border-black bg-yellow-50 mb-4 space-y-2">
+            <div className="text-sm">Please sign in to upload LoRAs.</div>
+            <div className="flex gap-2">
+              <button onClick={() => signIn("github")} className="px-4 py-2 border-2 border-black bg-white hover:bg-gray-100 text-sm font-bold">
+                Sign in with GitHub
+              </button>
+              <button
+                onClick={async () => {
+                  // quick dev login without redirect
+                  await signIn("credentials", { email: "dev@example.com", redirect: false });
+                  location.reload();
+                }}
+                className="px-4 py-2 border-2 border-black bg-white hover:bg-gray-100 text-sm font-bold"
+              >
+                Dev Sign-in
+              </button>
+            </div>
           </div>
         )}
 
