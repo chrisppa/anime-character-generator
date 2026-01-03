@@ -2,8 +2,6 @@ import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
 import type { Session } from "next-auth";
 
-type NextAuthFn = typeof import("next-auth")["default"];
-
 const config = {
   providers: [GitHub],
   debug: process.env.NODE_ENV !== "production",
@@ -15,6 +13,6 @@ const config = {
       return session;
     },
   },
-} satisfies Parameters<NextAuthFn>[0];
+} satisfies Parameters<typeof NextAuth>[0];
 
-export const { handlers, auth, signIn, signOut } = (NextAuth as unknown as NextAuthFn)(config);
+export const { handlers, auth, signIn, signOut } = NextAuth(config);
