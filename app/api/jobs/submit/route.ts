@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
+import { auth } from "@/lib/auth";
 import { getSignedGetUrl } from "@/lib/r2";
 import { inference } from "@/lib/inference/provider";
 import { NextRequest } from "next/server";
@@ -19,12 +20,25 @@ export async function POST(req: NextRequest) {
     }
 
     // Create job record
+    // associate user when available
+    const session = await auth();
+    let userId: string | undefined = undefined;
+    if (session?.user?.email) {
+      const user = await prisma.user.upsert({
+        where: { email: session.user.email },
+        update: {},
+        create: { email: session.user.email },
+      });
+      userId = user.id;
+    }
+
     const job = await prisma.job.create({
       data: {
         prompt,
         type,
         status: "queued",
         provider: env.INFERENCE_PROVIDER,
+        userId,
       },
     });
 

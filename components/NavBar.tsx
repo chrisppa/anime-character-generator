@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 type NavLink = {
   href: string;
@@ -14,6 +15,7 @@ type NavLink = {
 
 export const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { status } = useSession();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -80,12 +82,13 @@ export const NavBar = () => {
           ))}
         </ul>
 
-        {/* Desktop CTA Button */}
-        <Link href="/auth" className="hidden lg:block">
-          <button className="bg-white border-2 border-black px-6 py-2 rounded-full font-bold text-sm hover:bg-yellow-100 transition-colors cursor-pointer">
-            Join Us
-          </button>
-        </Link>
+        {/* Desktop Auth */}
+        <button
+          onClick={() => (status === "authenticated" ? signOut() : signIn())}
+          className="hidden lg:block bg-white border-2 border-black px-6 py-2 rounded-full font-bold text-sm hover:bg-yellow-100 transition-colors cursor-pointer"
+        >
+          {status === "authenticated" ? "Sign out" : "Sign in"}
+        </button>
 
         {/* Mobile Menu Button */}
         <button
@@ -126,11 +129,15 @@ export const NavBar = () => {
               </li>
             ))}
             <li className="px-4 pt-2">
-              <Link href="/auth" onClick={() => setIsMenuOpen(false)}>
-                <button className="w-full bg-white border-2 border-black px-6 py-2 rounded-full font-bold text-sm hover:bg-yellow-100 transition-colors cursor-pointer">
-                  Join Us
-                </button>
-              </Link>
+              <button
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  status === "authenticated" ? signOut() : signIn();
+                }}
+                className="w-full bg-white border-2 border-black px-6 py-2 rounded-full font-bold text-sm hover:bg-yellow-100 transition-colors cursor-pointer"
+              >
+                {status === "authenticated" ? "Sign out" : "Sign in"}
+              </button>
             </li>
           </ul>
         </div>

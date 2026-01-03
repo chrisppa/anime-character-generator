@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useSession, signIn } from "next-auth/react";
 
 export default function LoraUploadPage() {
+  const { status } = useSession();
   const [file, setFile] = useState<File | null>(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -125,6 +127,15 @@ export default function LoraUploadPage() {
         <h1 className="font-druk-condensed text-4xl uppercase tracking-tight text-black mb-4">Upload LoRA</h1>
         <p className="text-sm text-gray-700 mb-6">Upload a .safetensors LoRA file. It will be stored in R2 and registered in the database. After upload, copy the LoRA ID to use in generation.</p>
 
+        {status !== "authenticated" && (
+          <div className="p-3 border-2 border-black bg-yellow-50 mb-4">
+            <div className="text-sm mb-2">Please sign in to upload LoRAs.</div>
+            <button onClick={() => signIn()} className="px-4 py-2 border-2 border-black bg-white hover:bg-gray-100 text-sm font-bold">
+              Sign in with GitHub
+            </button>
+          </div>
+        )}
+
       <div className="space-y-4">
           <div>
             <label className="block text-xs font-mono uppercase text-gray-500 mb-1">Name</label>
@@ -208,7 +219,7 @@ export default function LoraUploadPage() {
 
           <button
             onClick={onUpload}
-            disabled={busy || !file}
+            disabled={busy || !file || status !== "authenticated"}
             className="w-full bg-black text-white py-3 font-druk-text-wide text-[11px] uppercase tracking-widest border-2 border-black hover:bg-[#FAFF00] hover:text-black transition-all disabled:opacity-50"
           >
             {busy ? "Uploading..." : "Upload & Register"}

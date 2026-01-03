@@ -30,7 +30,8 @@
     "react-dom": "19.2.1",
     "react-rough-notation": "^1.0.8",
     "tailwind-merge": "^3.4.0",
-    "three": "^0.182.0"
+    "three": "^0.182.0",
+    "next-auth": "^5.0.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
