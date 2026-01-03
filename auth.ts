@@ -2,7 +2,22 @@ import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
 import type { Session } from "next-auth";
 
-const config = {
+type NextAuthResultLite = {
+  handlers: Record<"GET" | "POST", (req: unknown) => Promise<Response>>;
+  auth: (...args: unknown[]) => unknown;
+  signIn: (...args: unknown[]) => Promise<unknown>;
+  signOut: (...args: unknown[]) => Promise<unknown>;
+};
+
+type NextAuthConfigLite = {
+  providers: unknown[];
+  debug?: boolean;
+  callbacks?: {
+    session?: (args: { session: Session; token: Record<string, unknown> }) => Promise<Session>;
+  };
+};
+
+const config: NextAuthConfigLite = {
   providers: [GitHub],
   debug: process.env.NODE_ENV !== "production",
   callbacks: {
@@ -13,6 +28,5 @@ const config = {
       return session;
     },
   },
-} satisfies Parameters<typeof NextAuth>[0];
-
-export const { handlers, auth, signIn, signOut } = NextAuth(config);
+};
+export const { handlers, auth, signIn, signOut } = (NextAuth as unknown as (c: NextAuthConfigLite) => NextAuthResultLite)(config);
