@@ -12,6 +12,7 @@ export const Hero = () => {
   const [jobId, setJobId] = useState<string | null>(null);
   const [status, setStatus] = useState<string>("idle");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [lastError, setLastError] = useState<string | null>(null);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -30,6 +31,7 @@ export const Hero = () => {
           setSubmitting(false);
         }
         if (data.error) {
+          setLastError(typeof data.error === 'string' ? data.error : JSON.stringify(data.error));
           if (pollRef.current) clearInterval(pollRef.current);
           pollRef.current = null;
           setSubmitting(false);
@@ -63,6 +65,7 @@ export const Hero = () => {
       setJobId(data.jobId);
     } catch (e) {
       setStatus("failed");
+      setLastError((e as Error).message);
       setSubmitting(false);
     }
   }
@@ -218,7 +221,9 @@ export const Hero = () => {
             <div className="mt-6 p-4 border-2 border-black bg-white">
               <div className="text-xs font-mono uppercase tracking-widest">Status: {status}</div>
               {status === "failed" && (
-                <div className="mt-2 text-xs text-red-600">Generation failed. Check server logs for provider error details.</div>
+                <div className="mt-2 text-xs text-red-600">
+                  Generation failed{lastError ? `: ${lastError}` : ". Check server logs for details."}
+                </div>
               )}
               {imageUrl && (
                 <div className="mt-3">
