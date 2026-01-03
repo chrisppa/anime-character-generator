@@ -14,6 +14,8 @@ export const Hero = () => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [lastError, setLastError] = useState<string | null>(null);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
+  const [loraOptions, setLoraOptions] = useState<{ label: string; value: string }[]>([]);
+  const [selectedLora, setSelectedLora] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (!jobId) return;
@@ -54,6 +56,7 @@ export const Hero = () => {
         prompt: positivePrompt || "1girl, mecha musume, white armor, glowing visor, futuristic city, masterpiece",
         negativePrompt: negativePrompt || undefined,
         type: activeTab,
+        loraId: selectedLora,
       };
       const res = await fetch("/api/jobs/submit", {
         method: "POST",
@@ -74,6 +77,21 @@ export const Hero = () => {
     { label: "Chihiro LoRA", value: "chihiro" },
     { label: "Zero Two LoRA", value: "zerotwo" },
   ];
+
+  useEffect(() => {
+    fetch("/api/lora/list")
+      .then((r) => r.json())
+      .then((list) => {
+        if (Array.isArray(list)) {
+          const opts = list.map((l: any) => ({
+            label: `${l.name}${l.nsfw ? " • NSFW" : ""}`,
+            value: l.id as string,
+          }));
+          setLoraOptions(opts);
+        }
+      })
+      .catch(() => {});
+  }, []);
   return (
     <div className="min-h-screen py-20 overflow-x-hidden">
       {/* --- Main Content Layer --- */}
@@ -149,14 +167,32 @@ export const Hero = () => {
 
               {/* Column 3: Settings */}
               <div className="lg:col-span-1 bg-white/50 border border-black/20 p-4 space-y-4">
-                {/* Model Selector */}
+                {/* Base Model Selector */}
                 <div className="space-y-1">
                   <label className="text-xs font-mono font-bold uppercase text-gray-500">
-                    Model / LoRA
+                    Base Model
                   </label>
                   <div className="relative">
                     <ModelSelect defaultValue="animind" options={models} />
                   </div>
+                </div>
+
+                {/* LoRA Selector (optional) */}
+                <div className="space-y-1">
+                  <label className="text-xs font-mono font-bold uppercase text-gray-500">LoRA (optional)</label>
+                  <div className="relative">
+                    <ModelSelect
+                      value={selectedLora}
+                      onValueChange={(v) => setSelectedLora(v)}
+                      placeholder={loraOptions.length ? "Select LoRA" : "No LoRAs uploaded"}
+                      options={loraOptions}
+                    />
+                  </div>
+                  {selectedLora && (
+                    <button onClick={() => setSelectedLora(undefined)} className="mt-1 text-[10px] underline">
+                      Clear LoRA
+                    </button>
+                  )}
                 </div>
 
                 {/* Sliders Grid */}
