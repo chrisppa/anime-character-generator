@@ -162,6 +162,13 @@ Notes
   - Configurable Runware/FAL providers + mock provider for demos
   - Status/error surfacing; dynamic route params normalization for Next 16
 
+## Prisma on Vercel / CI
+
+- Vercel caches dependencies and may skip Prisma's auto‑generation. To avoid `PrismaClientInitializationError` during build, we:
+  - Run `prisma generate` on `postinstall` (see `package.json`)
+  - Run `npx prisma generate` in CI before `next build` (see `.github/workflows/ci.yml`)
+  - If you add new models, re‑deploy to trigger generation with the latest schema.
+
 ## Admin Access
 
 - Set `ADMIN_EMAIL` in env (default: `cturyasiima@gmail.com`). Admin‑only features:

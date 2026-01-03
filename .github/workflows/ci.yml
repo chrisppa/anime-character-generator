@@ -36,8 +36,10 @@ jobs:
       - name: Typecheck
         run: npx tsc --noEmit
 
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
       - name: Build
         env:
           NEXT_TELEMETRY_DISABLED: 1
         run: npm run build
-
