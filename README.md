@@ -141,6 +141,39 @@ Notes
 - Auth is optional for MVP; userId fields are nullable. You can add Auth.js later.
 - Providers use placeholder model routes; pick Runware/fal and adjust model IDs as needed.
 
+## Recent Changes (Jan 3, 2026)
+
+- Events System
+  - Prisma model + API: `GET/POST /api/events`, `GET/PATCH/DELETE /api/events/[id]`
+  - Server‑side cover uploads: `POST /api/storage/upload` (avoids R2 CORS)
+  - Public listing `/events` (filters: All/Active/Upcoming/Archived, default All)
+  - Card CTA links to `event.url` when present; details page at `/events/[id]`
+  - Admin‑only management `/events/manage` (Create, table with Edit/Delete)
+  - Admin link in nav for `ADMIN_EMAIL`
+- Auth Migration (NextAuth v5 app router)
+  - Root `auth.ts` exports `{ handlers, auth, signIn, signOut }`
+  - Route handler at `app/api/auth/[...nextauth]/route.ts`
+  - Header shows GitHub avatar/name; profile page `/profile` lists user LoRAs
+- LoRA Workflow
+  - Upload with metadata (description, tags, NSFW, model type, base model), optional training zip and cover image
+  - Listing pages `/models/lora` (with Hide NSFW) and merged dynamic covers in `/models`
+  - Generator supports LoRA selection and params (width/height/steps/seed/CFG + negative prompt)
+- Inference + Debugging
+  - Configurable Runware/FAL providers + mock provider for demos
+  - Status/error surfacing; dynamic route params normalization for Next 16
+
+## Admin Access
+
+- Set `ADMIN_EMAIL` in env (default: `cturyasiima@gmail.com`). Admin‑only features:
+  - Nav link: “Manage Events”
+  - `/events/manage` (create, edit, delete events)
+
+## Notable Routes
+
+- Events: `/events` (list), `/events/[id]` (details), `/events/manage` (admin)
+- LoRA: `/lora/upload`, `/models/lora`, `/profile` (your LoRAs)
+- API: `/api/events`, `/api/events/[id]`, `/api/storage/upload`
+
 ## Attribution & Licenses
 
 - 3D model: “Mecha Girl Warrior” by Chenchanchong — CC‑BY‑4.0

@@ -73,6 +73,93 @@ export default function Changelog(){
         {/* Update Logs */}
 
         <UpdateEntry 
+          title="Events System: model, API, manage UI, and details"
+          date="Jan 3, 2026"
+          category="PLATFORM"
+          tag="FEATURE"
+        >
+          <p>Introduced a complete, database‑backed Events system with admin tools and public pages.</p>
+          <div className="space-y-3 md:space-y-4 pt-3 md:pt-4 border-t-2 border-black/5">
+            <h4 className="text-[8px] md:text-[9px] uppercase tracking-widest text-black font-black">Highlights</h4>
+            <ul className="space-y-3 md:space-y-4">
+              <li className="flex gap-2 md:gap-3">
+                <span className="text-yellow-500 font-black text-sm md:text-base shrink-0">•</span>
+                <div className="min-w-0">
+                  <strong className="block uppercase text-[10px] md:text-[11px] font-bold">Event model + API</strong>
+                  <span className="text-gray-500 text-xs md:text-sm">Prisma model with types, timings, prize, participants. New routes: <code>/api/events</code> (GET/POST) + <code>/api/events/[id]</code> (GET/PATCH/DELETE).</span>
+                </div>
+              </li>
+              <li className="flex gap-2 md:gap-3">
+                <span className="text-yellow-500 font-black text-sm md:text-base shrink-0">•</span>
+                <div className="min-w-0">
+                  <strong className="block uppercase text-[10px] md:text-[11px] font-bold">Server‑side uploads</strong>
+                  <span className="text-gray-500 text-xs md:text-sm">Added <code>/api/storage/upload</code> to upload cover images to R2 (avoids browser CORS). Next Image configured for R2 hosts.</span>
+                </div>
+              </li>
+              <li className="flex gap-2 md:gap-3">
+                <span className="text-yellow-500 font-black text-sm md:text-base shrink-0">•</span>
+                <div className="min-w-0">
+                  <strong className="block uppercase text-[10px] md:text-[11px] font-bold">Pages</strong>
+                  <span className="text-gray-500 text-xs md:text-sm">Public listing (<code>/events</code>) with filters (default All), card CTA to external link (if any), and details page <code>/events/[id]</code>.</span>
+                </div>
+              </li>
+              <li className="flex gap-2 md:gap-3">
+                <span className="text-yellow-500 font-black text-sm md:text-base shrink-0">•</span>
+                <div className="min-w-0">
+                  <strong className="block uppercase text-[10px] md:text-[11px] font-bold">Admin manage</strong>
+                  <span className="text-gray-500 text-xs md:text-sm">Admin‑only (<code>ADMIN_EMAIL</code>) manage page <code>/events/manage</code> with Create + table (Edit/Save/Delete). “Manage Events” appears in nav only for admin.</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </UpdateEntry>
+
+        <UpdateEntry 
+          title="Auth.js v5 migration + Profile"
+          date="Jan 3, 2026"
+          category="AUTH"
+          tag="BREAKING"
+        >
+          <p>Migrated to NextAuth v5 (App Router) per official docs. Root <code>auth.ts</code> now exports <code>{`{ handlers, auth, signIn, signOut }`}</code>. Added a Profile page.</p>
+          <div className="space-y-3 md:space-y-4 pt-3 md:pt-4 border-t-2 border-black/5">
+            <ul className="space-y-3 md:space-y-4">
+              <li className="flex gap-2 md:gap-3"><span className="text-yellow-500 font-black text-sm md:text-base shrink-0">•</span><div className="min-w-0"><strong className="block uppercase text-[10px] md:text-[11px] font-bold">Root config</strong><span className="text-gray-500 text-xs md:text-sm"> <code>auth.ts</code> + route <code>app/api/auth/[...nextauth]/route.ts</code> re‑export.</span></div></li>
+              <li className="flex gap-2 md:gap-3"><span className="text-yellow-500 font-black text-sm md:text-base shrink-0">•</span><div className="min-w-0"><strong className="block uppercase text-[10px] md:text-[11px] font-bold">UI</strong><span className="text-gray-500 text-xs md:text-sm"> Header shows avatar/name; dropdown with Profile + Sign out. <code>/profile</code> lists user’s LoRAs.</span></div></li>
+              <li className="flex gap-2 md:gap-3"><span className="text-yellow-500 font-black text-sm md:text-base shrink-0">•</span><div className="min-w-0"><strong className="block uppercase text-[10px] md:text-[11px] font-bold">Admin gating</strong><span className="text-gray-500 text-xs md:text-sm"> <code>ADMIN_EMAIL</code> env to guard management actions/links.</span></div></li>
+            </ul>
+          </div>
+        </UpdateEntry>
+
+        <UpdateEntry 
+          title="LoRA workflow: metadata, covers, and generator integration"
+          date="Jan 3, 2026"
+          category="FEATURES"
+          tag="LORA"
+        >
+          <p>Expanded the LoRA flow to include rich metadata, optional training data, cover images, listing and generator selection.</p>
+          <div className="space-y-3 md:space-y-4 pt-3 md:pt-4 border-t-2 border-black/5">
+            <ul className="space-y-3 md:space-y-4">
+              <li className="flex gap-2 md:gap-3"><span className="text-yellow-500 font-black text-sm md:text-base shrink-0">•</span><div className="min-w-0"><strong className="block uppercase text-[10px] md:text-[11px] font-bold">Upload + metadata</strong><span className="text-gray-500 text-xs md:text-sm"> <code>/lora/upload</code> supports description, tags, NSFW, modelType, baseModel, training zip, and cover image.</span></div></li>
+              <li className="flex gap-2 md:gap-3"><span className="text-yellow-500 font-black text-sm md:text-base shrink-0">•</span><div className="min-w-0"><strong className="block uppercase text-[10px] md:text-[11px] font-bold">Listing</strong><span className="text-gray-500 text-xs md:text-sm"> <code>/models/lora</code> shows LoRAs (Hide NSFW toggle). <code>/models</code> merges dynamic LoRAs (with covers) into the grid.</span></div></li>
+              <li className="flex gap-2 md:gap-3"><span className="text-yellow-500 font-black text-sm md:text-base shrink-0">•</span><div className="min-w-0"><strong className="block uppercase text-[10px] md:text-[11px] font-bold">Generator</strong><span className="text-gray-500 text-xs md:text-sm"> LoRA dropdown added; job submit supports width/height/steps/seed/CFG scale and negative prompt.</span></div></li>
+            </ul>
+          </div>
+        </UpdateEntry>
+
+        <UpdateEntry 
+          title="Inference + debug improvements"
+          date="Jan 3, 2026"
+          category="PLATFORM"
+          tag="UPDATE"
+        >
+          <p>Improved robustness while testing Runware/FAL and added a mock provider for demos.</p>
+          <ul className="space-y-3 md:space-y-4 pt-3 md:pt-4 border-t-2 border-black/5">
+            <li className="flex gap-2 md:gap-3"><span className="text-yellow-500 font-black text-sm md:text-base shrink-0">•</span><div className="min-w-0"><strong className="block uppercase text-[10px] md:text-[11px] font-bold">Providers</strong><span className="text-gray-500 text-xs md:text-sm"> Configurable Runware/FAL; fallback mock provider returns sample images after a short delay.</span></div></li>
+            <li className="flex gap-2 md:gap-3"><span className="text-yellow-500 font-black text-sm md:text-base shrink-0">•</span><div className="min-w-0"><strong className="block uppercase text-[10px] md:text-[11px] font-bold">Error surfacing</strong><span className="text-gray-500 text-xs md:text-sm"> Status panel surfaces provider errors; API normalizes dynamic route params (Next 16).</span></div></li>
+          </ul>
+        </UpdateEntry>
+
+        <UpdateEntry 
           title="Backend MVP scaffolding (API, Prisma, R2, Inference)" 
           date="Jan 2, 2026" 
           category="PLATFORM" 
