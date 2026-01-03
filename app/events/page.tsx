@@ -12,6 +12,7 @@ interface EventCardProps {
   type: string;
   imgSrc: StaticImageData | string;
   prizePool: string;
+  href?: string | null;
 }
 
 const EventCard: React.FC<EventCardProps> = ({
@@ -22,6 +23,7 @@ const EventCard: React.FC<EventCardProps> = ({
   type,
   imgSrc,
   prizePool,
+  href,
 }) => {
   const isEnded = status.toLowerCase() === "ended";
 
@@ -67,10 +69,22 @@ const EventCard: React.FC<EventCardProps> = ({
       {/* Event Details */}
       <div className="p-4 md:p-6 space-y-3 md:space-y-4">
         <div className="flex justify-between items-start gap-3 md:gap-4">
-          <h3 className="text-base md:text-xl font-black uppercase leading-tight md:leading-6 tracking-tighter group-hover:underline underline-offset-4 decoration-2 md:decoration-4">
-            {title}
-          </h3>
-          <ArrowUpRight className="shrink-0 w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+          {href ? (
+            <a href={href} target="_blank" rel="noopener noreferrer" className="flex-1">
+              <h3 className="text-base md:text-xl font-black uppercase leading-tight md:leading-6 tracking-tighter group-hover:underline underline-offset-4 decoration-2 md:decoration-4">
+                {title}
+              </h3>
+            </a>
+          ) : (
+            <h3 className="text-base md:text-xl font-black uppercase leading-tight md:leading-6 tracking-tighter">
+              {title}
+            </h3>
+          )}
+          {href && (
+            <a href={href} target="_blank" rel="noopener noreferrer" aria-label="Open event">
+              <ArrowUpRight className="shrink-0 w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+            </a>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-3 md:gap-4 pt-3 md:pt-4 border-t-2 border-black/5 font-mono">
@@ -93,15 +107,26 @@ const EventCard: React.FC<EventCardProps> = ({
         </div>
 
         {/* Call to Action */}
-        <button
-          className={`w-full py-2.5 md:py-3 font-black text-[10px] md:text-xs uppercase tracking-[0.2em] border-2 border-black transition-all ${
-            isEnded
-              ? "bg-transparent text-gray-400 border-gray-200 cursor-not-allowed"
-              : "bg-black text-white hover:bg-yellow-400 hover:text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] active:shadow-none active:translate-x-1 active:translate-y-1"
-          }`}
-        >
-          {isEnded ? "Competition Ended" : "Enter Competition"}
-        </button>
+        {href ? (
+          <a
+            href={isEnded ? undefined : href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`w-full block text-center py-2.5 md:py-3 font-black text-[10px] md:text-xs uppercase tracking-[0.2em] border-2 border-black transition-all ${
+              isEnded
+                ? "bg-transparent text-gray-400 border-gray-200 pointer-events-none"
+                : "bg-black text-white hover:bg-yellow-400 hover:text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] active:shadow-none active:translate-x-1 active:translate-y-1"
+            }`}
+          >
+            {isEnded ? "Competition Ended" : "Enter Competition"}
+          </a>
+        ) : (
+          <button
+            className={`w-full py-2.5 md:py-3 font-black text-[10px] md:text-xs uppercase tracking-[0.2em] border-2 border-black transition-all bg-transparent text-gray-400 border-gray-200 cursor-not-allowed`}
+          >
+            No Link Available
+          </button>
+        )}
       </div>
     </div>
   );
@@ -118,6 +143,7 @@ interface EventItem {
   type: string;
   prizePool: string;
   imgSrc: StaticImageData | string;
+  href?: string | null;
 }
 
 export default function EventsArchive() {
@@ -144,6 +170,7 @@ export default function EventsArchive() {
           type: mapType(e.type),
           prizePool: e.prizePool || "—",
           imgSrc: e.coverUrl || articleImages[idx % articleImages.length],
+          href: e.url || null,
         }));
         setItems(mapped);
       })
