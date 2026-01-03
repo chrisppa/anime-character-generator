@@ -14,6 +14,11 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       return Response.json({ status: job.status, imageUrl: job.imageUrl, error: job.error });
     }
 
+    // If we don't have a provider job id yet, surface any existing error
+    if (!job.providerJobId) {
+      return Response.json({ status: job.status, imageUrl: job.imageUrl, error: job.error || "provider job id not set" });
+    }
+
     // Poll provider once
     if (job.providerJobId) {
       const status = await inference.getStatus(job.providerJobId);
