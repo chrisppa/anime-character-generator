@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image, { StaticImageData } from "next/image";
 import { Trophy, Users, Calendar, ArrowUpRight } from "lucide-react";
 import * as images from "@/public/images";
@@ -10,7 +10,7 @@ interface EventCardProps {
   participants: string;
   status: string;
   type: string;
-  imgSrc: StaticImageData;
+  imgSrc: StaticImageData | string;
   prizePool: string;
 }
 
@@ -47,7 +47,7 @@ const EventCard: React.FC<EventCardProps> = ({
           className={`absolute inset-0 transition-all duration-700 ${isEnded ? "grayscale contrast-125" : "group-hover:scale-110"}`}
         >
           <Image
-            src={imgSrc}
+            src={imgSrc as any}
             alt={title}
             fill
             className="object-cover"
@@ -109,54 +109,46 @@ const EventCard: React.FC<EventCardProps> = ({
 
 type FilterType = "active" | "upcoming" | "archived";
 
-interface Event {
+interface EventItem {
+  id: string;
   title: string;
   date: string;
   participants: string;
   status: string;
   type: string;
   prizePool: string;
-  imgSrc: StaticImageData;
+  imgSrc: StaticImageData | string;
 }
 
 export default function EventsArchive() {
   const [activeFilter, setActiveFilter] = useState<FilterType>("active");
+  const [items, setItems] = useState<EventItem[]>([]);
 
-  // Get only images with 'article' in the name
-  const articleImages = Object.entries(images)
-    .filter(([key]) => key.toLowerCase().includes("article"))
-    .map(([, value]) => value as StaticImageData);
+  useEffect(() => {
+    const mapType = (t: string) => t?.toUpperCase() || "CONTEST";
+    // fallback images
+    const articleImages = Object.entries(images)
+      .filter(([key]) => key.toLowerCase().includes("article"))
+      .map(([, value]) => value as StaticImageData);
 
-  // Array of events with corresponding images
-  const events: Event[] = [
-    {
-      title: "Mecha_Morph: Winter Reconstruction 2025",
-      date: "DEC 13, 2025",
-      participants: "15.3K",
-      status: "Ongoing",
-      type: "CONTEST",
-      prizePool: "5,000 BUZZ",
-      imgSrc: articleImages[0],
-    },
-    {
-      title: "Great Halloween Contest: Results Protocol",
-      date: "OCT 21, 2025",
-      participants: "11.8K",
-      status: "Ended",
-      type: "RESULTS",
-      prizePool: "10,000 BUZZ",
-      imgSrc: articleImages[1],
-    },
-    {
-      title: "Neural_Visions: Video Generation Awards",
-      date: "JUN 27, 2025",
-      participants: "4.2K",
-      status: "Upcoming",
-      type: "AWARDS",
-      prizePool: "SPECIAL_ROLE",
-      imgSrc: articleImages[2],
-    },
-  ];
+    fetch(`/api/events?filter=${activeFilter}`)
+      .then((r) => r.json())
+      .then((list) => {
+        if (!Array.isArray(list)) return;
+        const mapped = list.map((e: any, idx: number) => ({
+          id: e.id,
+          title: e.title,
+          date: new Date(e.startAt).toLocaleDateString(undefined, { month: "short", day: "2-digit", year: "numeric" }).toUpperCase(),
+          participants: e.participants ? `${e.participants}` : "—",
+          status: e.status,
+          type: mapType(e.type),
+          prizePool: e.prizePool || "—",
+          imgSrc: e.coverUrl || articleImages[idx % articleImages.length],
+        }));
+        setItems(mapped);
+      })
+      .catch(() => {});
+  }, [activeFilter]);
 
   const filters: FilterType[] = ["active", "upcoming", "archived"];
 
@@ -191,9 +183,9 @@ export default function EventsArchive() {
 
         {/* Events Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
-          {events.map((event, index) => (
+          {items.map((event) => (
             <EventCard
-              key={index}
+              key={event.id}
               title={event.title}
               date={event.date}
               participants={event.participants}

@@ -7,7 +7,14 @@ export async function POST(req: NextRequest) {
     if (!filename || !contentType) {
       return new Response(JSON.stringify({ error: "filename and contentType required" }), { status: 400 });
     }
-    const folder = kind === "training" ? "training" : kind === "cover" ? "loras/covers" : "loras";
+    const folder =
+      kind === "training"
+        ? "training"
+        : kind === "cover"
+        ? "loras/covers"
+        : kind === "eventCover"
+        ? "events/covers"
+        : "loras";
     const key = `${folder}/${Date.now()}-${filename}`;
     const url = await getSignedPutUrl(key, contentType);
     return Response.json({ key, uploadUrl: url });

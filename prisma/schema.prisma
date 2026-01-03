@@ -14,6 +14,7 @@ model User {
   updatedAt DateTime @updatedAt
   jobs      Job[]
   loras     Lora[]
+  events    Event[]
 }
 
 model Lora {
@@ -41,6 +42,30 @@ enum LoraType {
   LORA
   TEXTUAL_INVERSION
   VAE
+  OTHER
+}
+
+model Event {
+  id           String    @id @default(uuid())
+  title        String
+  description  String?   @db.Text
+  type         EventType @default(CONTEST)
+  startAt      DateTime
+  endAt        DateTime
+  participants Int?
+  prizePool    String?
+  url          String?
+  coverKey     String?
+  userId       String?
+  user         User?     @relation(fields: [userId], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+enum EventType {
+  CONTEST
+  AWARDS
+  RESULTS
   OTHER
 }
 
