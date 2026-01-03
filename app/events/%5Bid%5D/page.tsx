@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
 
-export default async function EventDetail({ params }: { params: { id: string } }) {
-  const e = await prisma.event.findUnique({ where: { id: params.id } });
+export default async function EventDetail({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const e = await prisma.event.findUnique({ where: { id } });
   if (!e) return <div className="min-h-screen p-8">Event not found.</div>;
   const base = env.R2_PUBLIC_BASE_URL?.replace(/\/$/, "");
   const coverUrl = e.coverKey && base ? `${base}/${encodeURIComponent(e.coverKey)}` : null;
@@ -39,4 +40,3 @@ export default async function EventDetail({ params }: { params: { id: string } }
     </div>
   );
 }
-
