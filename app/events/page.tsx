@@ -220,6 +220,7 @@ export default function EventsArchive() {
               type={event.type}
               prizePool={event.prizePool}
               imgSrc={event.imgSrc}
+              href={event.href}
             />
           ))}
         </div>
