@@ -2,6 +2,8 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { env } from "@/lib/env";
 import { NextRequest } from "next/server";
+import type { Prisma } from "@prisma/client";
+import { EventType } from "@prisma/client";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<Record<string, string>> }) {
   const { id } = await params;
@@ -17,22 +19,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<Reco
   if (session?.user?.email !== env.ADMIN_EMAIL) return new Response("Forbidden", { status: 403 });
   try {
     const body = await req.json();
-    type UpdateData = Partial<{
-      title: string;
-      description: string | null;
-      type: string;
-      participants: number | null;
-      prizePool: string | null;
-      url: string | null;
-      coverKey: string | null;
-      startAt: Date;
-      endAt: Date;
-    }>;
-    const data: UpdateData = {};
+    const data: Prisma.EventUpdateInput = {};
     if (body.title !== undefined) data.title = body.title;
     if (body.description !== undefined) data.description = body.description;
-    if (body.type !== undefined) data.type = body.type;
-    if (body.participants !== undefined && body.participants !== "") data.participants = Number(body.participants);
+    if (body.type !== undefined) data.type = body.type as EventType;
+    if (body.participants !== undefined && body.participants !== "") {
+      const n = Number(body.participants);
+      data.participants = Number.isFinite(n) ? n : null;
+    }
     if (body.prizePool !== undefined) data.prizePool = body.prizePool;
     if (body.url !== undefined) data.url = body.url;
     if (body.coverKey !== undefined) data.coverKey = body.coverKey;
