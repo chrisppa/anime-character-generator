@@ -4,7 +4,8 @@ import type { Session } from "next-auth";
 
 type NextAuthResultLite = {
   handlers: Record<"GET" | "POST", (req: unknown) => Promise<Response>>;
-  auth: (...args: unknown[]) => unknown;
+  // We primarily use the zero-arg variant in this codebase
+  auth: () => Promise<Session | null>;
   signIn: (...args: unknown[]) => Promise<unknown>;
   signOut: (...args: unknown[]) => Promise<unknown>;
 };
