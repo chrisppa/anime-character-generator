@@ -130,21 +130,9 @@ export default function LoraUploadPage() {
         {status !== "authenticated" && (
           <div className="p-3 border-2 border-black bg-yellow-50 mb-4 space-y-2">
             <div className="text-sm">Please sign in to upload LoRAs.</div>
-            <div className="flex gap-2">
-              <button onClick={() => signIn("github")} className="px-4 py-2 border-2 border-black bg-white hover:bg-gray-100 text-sm font-bold">
-                Sign in with GitHub
-              </button>
-              <button
-                onClick={async () => {
-                  // quick dev login without redirect
-                  await signIn("credentials", { email: "dev@example.com", redirect: false });
-                  location.reload();
-                }}
-                className="px-4 py-2 border-2 border-black bg-white hover:bg-gray-100 text-sm font-bold"
-              >
-                Dev Sign-in
-              </button>
-            </div>
+            <button onClick={() => signIn("github")} className="px-4 py-2 border-2 border-black bg-white hover:bg-gray-100 text-sm font-bold">
+              Sign in with GitHub
+            </button>
           </div>
         )}
 

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Image, { StaticImageData } from "next/image";
 import { Download, Star, Heart, MoreVertical, Zap, Search } from "lucide-react";
 import * as models from "@/public/images";

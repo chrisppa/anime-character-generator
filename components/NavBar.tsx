@@ -16,7 +16,7 @@ type NavLink = {
 
 export const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { status } = useSession();
+  const { data: session, status } = useSession();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -84,12 +84,34 @@ export const NavBar = () => {
         </ul>
 
         {/* Desktop Auth */}
-        <button
-          onClick={() => (status === "authenticated" ? signOut() : signIn("github"))}
-          className="hidden lg:block bg-white border-2 border-black px-6 py-2 rounded-full font-bold text-sm hover:bg-yellow-100 transition-colors cursor-pointer"
-        >
-          {status === "authenticated" ? "Sign out" : "Sign in"}
-        </button>
+        {status === "authenticated" ? (
+          <div className="hidden lg:flex items-center gap-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {session?.user?.image && (
+              <img
+                src={session.user.image}
+                alt={session.user.name || "avatar"}
+                className="w-8 h-8 rounded-full border-2 border-black object-cover"
+              />
+            )}
+            {session?.user?.name && (
+              <span className="text-sm font-semibold max-w-[160px] truncate">{session.user.name}</span>
+            )}
+            <button
+              onClick={() => signOut()}
+              className="bg-white border-2 border-black px-4 py-2 rounded-full font-bold text-sm hover:bg-yellow-100 transition-colors cursor-pointer"
+            >
+              Sign out
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => signIn("github")}
+            className="hidden lg:block bg-white border-2 border-black px-6 py-2 rounded-full font-bold text-sm hover:bg-yellow-100 transition-colors cursor-pointer"
+          >
+            Sign in
+          </button>
+        )}
 
         {/* Mobile Menu Button */}
         <button
@@ -130,15 +152,27 @@ export const NavBar = () => {
               </li>
             ))}
             <li className="px-4 pt-2">
-              <button
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  status === "authenticated" ? signOut() : signIn("github");
-                }}
-                className="w-full bg-white border-2 border-black px-6 py-2 rounded-full font-bold text-sm hover:bg-yellow-100 transition-colors cursor-pointer"
-              >
-                {status === "authenticated" ? "Sign out" : "Sign in"}
-              </button>
+              {status === "authenticated" ? (
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    signOut();
+                  }}
+                  className="w-full bg-white border-2 border-black px-6 py-2 rounded-full font-bold text-sm hover:bg-yellow-100 transition-colors cursor-pointer"
+                >
+                  Sign out
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    signIn("github");
+                  }}
+                  className="w-full bg-white border-2 border-black px-6 py-2 rounded-full font-bold text-sm hover:bg-yellow-100 transition-colors cursor-pointer"
+                >
+                  Sign in
+                </button>
+              )}
             </li>
           </ul>
         </div>
