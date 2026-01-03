@@ -13,9 +13,17 @@ function headers() {
 }
 
 // fal queue semantics: POST /{route}/requests with input, then GET /{route}/requests/{id}
+type FalSubmitResponse = { request_id?: string; id?: string } & Record<string, unknown>;
+type FalStatusResponse = {
+  status?: string; state?: string; phase?: string;
+  response?: { images?: Array<{ url?: string }>; output?: Array<{ url?: string }> };
+  image_url?: string; images?: Array<{ url?: string }>;
+  error?: string; message?: string;
+} & Record<string, unknown>;
+
 export async function submit(params: SubmitParams): Promise<SubmitResult> {
   const url = `${FAL_BASE}/${FAL_ROUTE}/requests`;
-  const body: any = {
+  const body = {
     input: {
       prompt: params.prompt,
       negative_prompt: params.negativePrompt,
@@ -35,8 +43,8 @@ export async function submit(params: SubmitParams): Promise<SubmitResult> {
     console.error("FAL submit failed", res.status, text);
     return { providerJobId: "", status: "failed", error: text };
   }
-  let data: any = {};
-  try { data = JSON.parse(text); } catch {}
+  let data: FalSubmitResponse = {};
+  try { data = JSON.parse(text) as FalSubmitResponse; } catch {}
   console.log("FAL submit ok", data);
   const id = data.request_id || data.id || "";
   return { providerJobId: id, status: "queued" };
@@ -64,20 +72,20 @@ export async function getStatus(providerJobId: string): Promise<StatusResult> {
         console.error("FAL status failed", res.status, text);
         return { status: "failed", error: text };
       }
-      let data: any = {};
-      try { data = JSON.parse(text); } catch {}
+      let data: FalStatusResponse = {};
+      try { data = JSON.parse(text) as FalStatusResponse; } catch {}
       console.log("FAL status", data);
       const raw = (data.status || data.state || data.phase || "queued").toString().toLowerCase();
-      const status: StatusResult["status"] = raw === "completed" ? "succeeded" : (raw as any);
+      const status: StatusResult["status"] = raw === "completed" ? "succeeded" : (raw as StatusResult["status"]);
       if (status === "succeeded") {
         const imageUrl = data.response?.images?.[0]?.url || data.response?.output?.[0]?.url || data.image_url || data.images?.[0]?.url || undefined;
         return { status: "succeeded", imageUrl };
       }
-      if (["running", "processing", "in_progress"].includes(status)) return { status: "running" } as StatusResult;
-      if (["failed", "error", "canceled"].includes(status)) return { status: "failed", error: data.error || data.message || "failed" } as StatusResult;
+      if (["running", "processing", "in_progress"].includes(status)) return { status: "running" };
+      if (["failed", "error", "canceled"].includes(status)) return { status: "failed", error: data.error || data.message || "failed" };
       return { status: "queued" };
-    } catch (e: any) {
-      console.warn("FAL status fetch threw", attempt.method, attempt.url, e?.message);
+    } catch (e: unknown) {
+      console.warn("FAL status fetch threw", attempt.method, attempt.url, e instanceof Error ? e.message : e);
       continue;
     }
   }
