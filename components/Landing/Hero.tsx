@@ -1,11 +1,70 @@
 "use client";
 import { RoughNotation } from "react-rough-notation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Sparkles } from "lucide-react";
 import { ModelSelect } from "@/components/ui/model-select";
 
 export const Hero = () => {
   const [activeTab, setActiveTab] = useState("txt2img");
+  const [positivePrompt, setPositivePrompt] = useState("");
+  const [negativePrompt, setNegativePrompt] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [jobId, setJobId] = useState<string | null>(null);
+  const [status, setStatus] = useState<string>("idle");
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const pollRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (!jobId) return;
+    // Simple polling loop every 3s
+    pollRef.current && clearInterval(pollRef.current);
+    pollRef.current = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/jobs/${jobId}/status`);
+        const data = await res.json();
+        if (data.status) setStatus(data.status);
+        if (data.imageUrl) {
+          setImageUrl(data.imageUrl);
+          if (pollRef.current) clearInterval(pollRef.current);
+          pollRef.current = null;
+          setSubmitting(false);
+        }
+        if (data.error) {
+          if (pollRef.current) clearInterval(pollRef.current);
+          pollRef.current = null;
+          setSubmitting(false);
+        }
+      } catch (e) {
+        // ignore transient errors during polling
+      }
+    }, 3000);
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, [jobId]);
+
+  async function handleGenerate() {
+    try {
+      setSubmitting(true);
+      setStatus("queued");
+      setImageUrl(null);
+      const body = {
+        prompt: positivePrompt || "1girl, mecha musume, white armor, glowing visor, futuristic city, masterpiece",
+        type: activeTab,
+      };
+      const res = await fetch("/api/jobs/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Submit failed");
+      setJobId(data.jobId);
+    } catch (e) {
+      setStatus("failed");
+      setSubmitting(false);
+    }
+  }
   const models = [
     { label: "AniMind v1.0 (Base)", value: "animind" },
     { label: "Chihiro LoRA", value: "chihiro" },
@@ -67,6 +126,8 @@ export const Hero = () => {
                   <textarea
                     className="w-full bg-white border border-black p-3 text-sm h-24 focus:outline-none focus:ring-2 focus:ring-[#FFE03B] resize-none font-medium"
                     placeholder="1girl, mecha musume, white armor, glowing visor, futuristic city background, masterpiece, best quality..."
+                    value={positivePrompt}
+                    onChange={(e) => setPositivePrompt(e.target.value)}
                   />
                 </div>
                 <div className="space-y-1">
@@ -76,6 +137,8 @@ export const Hero = () => {
                   <textarea
                     className="w-full bg-white border border-black p-3 text-sm h-20 focus:outline-none focus:ring-2 focus:ring-red-400 resize-none font-medium"
                     placeholder="low quality, worst quality, bad hands, missing fingers, extra limbs, watermark..."
+                    value={negativePrompt}
+                    onChange={(e) => setNegativePrompt(e.target.value)}
                   />
                 </div>
               </div>
@@ -142,13 +205,25 @@ export const Hero = () => {
                 </div>
 
                 {/* Action Button */}
-                <button className="w-full mt-2 bg-black hover:bg-[#FFE03B] hover:text-black text-white font-bold py-3 px-4 border-2 border-black transition-all flex items-center justify-center gap-2 group shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] active:shadow-none active:translate-x-1 active:translate-y-1 cursor-pointer">
+                <button onClick={handleGenerate} disabled={submitting} className="w-full mt-2 bg-black hover:bg-[#FFE03B] hover:text-black text-white font-bold py-3 px-4 border-2 border-black transition-all flex items-center justify-center gap-2 group shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] active:shadow-none active:translate-x-1 active:translate-y-1 cursor-pointer disabled:opacity-60">
                   <Sparkles className="w-4 h-4" />
-                  <span>START GENERATE</span>
+                  <span>{submitting ? "GENERATING..." : "START GENERATE"}</span>
                 </button>
               </div>
             </div>
           </div>
+          {/* Simple result/status preview */}
+          {(status !== "idle" || imageUrl) && (
+            <div className="mt-6 p-4 border-2 border-black bg-white">
+              <div className="text-xs font-mono uppercase tracking-widest">Status: {status}</div>
+              {imageUrl && (
+                <div className="mt-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={imageUrl} alt="result" className="border border-black max-h-96 object-contain" />
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
