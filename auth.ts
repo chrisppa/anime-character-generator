@@ -1,5 +1,5 @@
 import NextAuth from "next-auth";
-import type { NextAuthConfig } from "next-auth";
+import type { NextAuthConfig, NextAuthResult } from "next-auth";
 import GitHub from "next-auth/providers/github";
 import type { Session } from "next-auth";
 
@@ -18,4 +18,4 @@ const config: NextAuthConfig = {
   },
 };
 
-export const { handlers, auth, signIn, signOut } = (NextAuth as unknown as (c: NextAuthConfig) => any)(config);
+export const { handlers, auth, signIn, signOut } = (NextAuth as unknown as (c: NextAuthConfig) => NextAuthResult)(config);
