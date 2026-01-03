@@ -130,7 +130,7 @@ export default function LoraUploadPage() {
         {status !== "authenticated" && (
           <div className="p-3 border-2 border-black bg-yellow-50 mb-4">
             <div className="text-sm mb-2">Please sign in to upload LoRAs.</div>
-            <button onClick={() => signIn()} className="px-4 py-2 border-2 border-black bg-white hover:bg-gray-100 text-sm font-bold">
+            <button onClick={() => signIn("github")} className="px-4 py-2 border-2 border-black bg-white hover:bg-gray-100 text-sm font-bold">
               Sign in with GitHub
             </button>
           </div>

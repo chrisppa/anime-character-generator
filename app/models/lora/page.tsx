@@ -17,6 +17,7 @@ type Lora = {
 export default function LoraModelsPage() {
   const [items, setItems] = useState<Lora[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hideNSFW, setHideNSFW] = useState(true);
 
   useEffect(() => {
     fetch("/api/lora/list")
@@ -35,8 +36,14 @@ export default function LoraModelsPage() {
         ) : items.length === 0 ? (
           <div className="text-sm">No LoRAs yet. Upload one from the <a className="underline" href="/lora/upload">upload page</a>.</div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {items.map((l) => (
+          <>
+            <div className="mb-3 flex items-center gap-2">
+              <label className="text-sm flex items-center gap-2">
+                <input type="checkbox" checked={hideNSFW} onChange={(e) => setHideNSFW(e.target.checked)} /> Hide NSFW
+              </label>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {items.filter((l) => (hideNSFW ? !l.nsfw : true)).map((l) => (
               <div key={l.id} className="bg-white border-2 border-black p-4 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
                 <div className="flex items-start justify-between gap-3">
                   <div>
@@ -64,10 +71,10 @@ export default function LoraModelsPage() {
                 </div>
               </div>
             ))}
-          </div>
+            </div>
+          </>
         )}
       </div>
     </div>
   );
 }
-

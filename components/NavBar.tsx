@@ -84,7 +84,7 @@ export const NavBar = () => {
 
         {/* Desktop Auth */}
         <button
-          onClick={() => (status === "authenticated" ? signOut() : signIn())}
+          onClick={() => (status === "authenticated" ? signOut() : signIn("github"))}
           className="hidden lg:block bg-white border-2 border-black px-6 py-2 rounded-full font-bold text-sm hover:bg-yellow-100 transition-colors cursor-pointer"
         >
           {status === "authenticated" ? "Sign out" : "Sign in"}
@@ -132,7 +132,7 @@ export const NavBar = () => {
               <button
                 onClick={() => {
                   setIsMenuOpen(false);
-                  status === "authenticated" ? signOut() : signIn();
+                  status === "authenticated" ? signOut() : signIn("github");
                 }}
                 className="w-full bg-white border-2 border-black px-6 py-2 rounded-full font-bold text-sm hover:bg-yellow-100 transition-colors cursor-pointer"
               >
