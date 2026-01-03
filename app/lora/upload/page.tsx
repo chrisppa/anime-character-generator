@@ -1,0 +1,112 @@
+"use client";
+
+import { useState } from "react";
+
+export default function LoraUploadPage() {
+  const [file, setFile] = useState<File | null>(null);
+  const [name, setName] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [createdId, setCreatedId] = useState<string | null>(null);
+
+  function onPick(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0] || null;
+    setFile(f);
+    if (f && !name) setName(f.name.replace(/\.[^.]+$/, ""));
+  }
+
+  async function onUpload() {
+    if (!file) return;
+    setBusy(true);
+    setMessage(null);
+    setCreatedId(null);
+    try {
+      // 1) Ask server for presigned PUT
+      const signRes = await fetch("/api/lora/sign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filename: file.name, contentType: file.type || "application/octet-stream" }),
+      });
+      const sign = await signRes.json();
+      if (!signRes.ok) throw new Error(sign?.error || "Sign failed");
+
+      // 2) Upload directly to R2
+      const putRes = await fetch(sign.uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type || "application/octet-stream" },
+        body: file,
+      });
+      if (!putRes.ok) {
+        const txt = await putRes.text();
+        throw new Error(`Upload failed: ${txt}`);
+      }
+
+      // 3) Register in DB
+      const regRes = await fetch("/api/lora/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name || file.name, key: sign.key, sizeBytes: file.size }),
+      });
+      const reg = await regRes.json();
+      if (!regRes.ok) throw new Error(reg?.error || "Register failed");
+      setCreatedId(reg.id);
+      setMessage("LoRA uploaded and registered successfully.");
+    } catch (e: any) {
+      setMessage(e.message || "Upload failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-[#E2E2D1] py-10 px-4">
+      <div className="max-w-2xl mx-auto bg-white border-4 border-black p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <h1 className="font-druk-condensed text-4xl uppercase tracking-tight text-black mb-4">Upload LoRA</h1>
+        <p className="text-sm text-gray-700 mb-6">Upload a .safetensors LoRA file. It will be stored in R2 and registered in the database. After upload, copy the LoRA ID to use in generation.</p>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-xs font-mono uppercase text-gray-500 mb-1">Name</label>
+            <input
+              className="w-full bg-white border border-black p-2 text-sm"
+              placeholder="My LoRA"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-mono uppercase text-gray-500 mb-1">File (.safetensors)</label>
+            <input type="file" accept=".safetensors" onChange={onPick} className="block w-full" />
+            {file && (
+              <div className="mt-1 text-xs text-gray-600">{file.name} • {(file.size / (1024 * 1024)).toFixed(2)} MB</div>
+            )}
+          </div>
+
+          <button
+            onClick={onUpload}
+            disabled={busy || !file}
+            className="w-full bg-black text-white py-3 font-druk-text-wide text-[11px] uppercase tracking-widest border-2 border-black hover:bg-[#FAFF00] hover:text-black transition-all disabled:opacity-50"
+          >
+            {busy ? "Uploading..." : "Upload & Register"}
+          </button>
+
+          {message && <div className="text-sm mt-2">{message}</div>}
+          {createdId && (
+            <div className="mt-4 p-3 border border-black bg-yellow-50 text-sm">
+              <div className="font-bold">LoRA ID</div>
+              <div className="font-mono break-all">{createdId}</div>
+              <button
+                onClick={() => navigator.clipboard?.writeText(createdId)}
+                className="mt-2 px-3 py-1 border-2 border-black bg-white hover:bg-gray-100 text-xs"
+              >
+                Copy ID
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+

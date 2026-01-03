@@ -21,6 +21,7 @@ export const NavBar = () => {
     { href: "/models", label: "Models" },
     { href: "/events", label: "Events" },
     { href: "/changelog", label: "Changelog" },
+    { href: "/lora/upload", label: "Upload LoRA" },
     {
       href: "https://twitter.com/kristuryasiima",
       label: "Twitter (X)",
