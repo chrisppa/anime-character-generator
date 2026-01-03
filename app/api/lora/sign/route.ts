@@ -18,7 +18,8 @@ export async function POST(req: NextRequest) {
     const key = `${folder}/${Date.now()}-${filename}`;
     const url = await getSignedPutUrl(key, contentType);
     return Response.json({ key, uploadUrl: url });
-  } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message || "failed" }), { status: 500 });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : "failed";
+    return new Response(JSON.stringify({ error: msg }), { status: 500 });
   }
 }

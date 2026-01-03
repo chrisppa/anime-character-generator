@@ -16,7 +16,18 @@ export default function ManageEventsPage() {
   const [cover, setCover] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [rows, setRows] = useState<any[]>([]);
+  type EventRow = {
+    id: string;
+    title: string;
+    type: string;
+    startAt: string | Date;
+    endAt: string | Date;
+    participants?: number | null;
+    prizePool?: string | null;
+    url?: string | null;
+    description?: string | null;
+  };
+  const [rows, setRows] = useState<EventRow[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -42,8 +53,8 @@ export default function ManageEventsPage() {
       if (!res.ok) throw new Error(data?.error || "Create failed");
       setMessage("Event created.");
       setTitle(""); setDescription(""); setStartAt(""); setEndAt(""); setParticipants(""); setPrizePool(""); setUrl(""); setCover(null);
-    } catch (e: any) {
-      setMessage(e.message || "Failed");
+    } catch (e: unknown) {
+      setMessage(e instanceof Error ? e.message : "Failed");
     } finally { setBusy(false); }
   }
 

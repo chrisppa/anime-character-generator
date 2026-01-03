@@ -32,7 +32,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     }
 
     return Response.json({ status: job.status });
-  } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message || "failed" }), { status: 500 });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : "failed";
+    return new Response(JSON.stringify({ error: msg }), { status: 500 });
   }
 }

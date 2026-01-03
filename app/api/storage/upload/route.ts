@@ -44,8 +44,8 @@ export async function POST(req: NextRequest) {
     const base = env.R2_PUBLIC_BASE_URL?.replace(/\/$/, "");
     const url = base ? `${base}/${encodeURIComponent(key)}` : undefined;
     return Response.json({ key, url });
-  } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message || "failed" }), { status: 500 });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : "failed";
+    return new Response(JSON.stringify({ error: msg }), { status: 500 });
   }
 }
-

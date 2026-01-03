@@ -17,7 +17,18 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<Reco
   if (session?.user?.email !== env.ADMIN_EMAIL) return new Response("Forbidden", { status: 403 });
   try {
     const body = await req.json();
-    const data: any = {};
+    type UpdateData = Partial<{
+      title: string;
+      description: string | null;
+      type: string;
+      participants: number | null;
+      prizePool: string | null;
+      url: string | null;
+      coverKey: string | null;
+      startAt: Date;
+      endAt: Date;
+    }>;
+    const data: UpdateData = {};
     if (body.title !== undefined) data.title = body.title;
     if (body.description !== undefined) data.description = body.description;
     if (body.type !== undefined) data.type = body.type;
@@ -36,8 +47,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<Reco
     const { id } = await params;
     const e = await prisma.event.update({ where: { id }, data });
     return Response.json(e);
-  } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message || "failed" }), { status: 500 });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : "failed";
+    return new Response(JSON.stringify({ error: msg }), { status: 500 });
   }
 }
 
