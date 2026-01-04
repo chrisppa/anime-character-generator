@@ -1,5 +1,10 @@
 # AniMind — Anime Character Generator (WIP)
 
+<p align="center">
+  <img src="public/images/animind_logo.png" alt="AniMind Logo" height="64" />
+  
+</p>
+
 AniMind is an early‑stage, UI‑first Next.js project for anime character generation. The current focus is on getting the interface right for generating images with existing models, while leaving room to expand into user‑provided LoRAs and training workflows in the future.
 
 Status: actively evolving, pre‑alpha. Expect breaking changes while the core UX and component structure solidify.
