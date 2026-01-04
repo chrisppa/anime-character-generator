@@ -1,5 +1,3 @@
-# AniMind — Anime Character Generator (WIP)
-
 <p align="center">
   <img src="public/images/animind_logo_readme.png" alt="AniMind Logo" />
 </p>
