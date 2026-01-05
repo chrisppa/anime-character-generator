@@ -260,7 +260,7 @@ export default function ModelLibrary() {
             imgSrc={model.src}
             name={model.name}
             type={model.type}
-            stats={model.stats}
+            stats={model.stats!}
           />
         ))}
       </div>
