@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
 import { auth } from "@/auth";
-export const runtime = "nodejs";
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {

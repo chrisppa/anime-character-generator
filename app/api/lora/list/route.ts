@@ -1,7 +1,5 @@
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
