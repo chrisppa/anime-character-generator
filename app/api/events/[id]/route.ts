@@ -5,8 +5,8 @@ import { NextRequest } from "next/server";
 import type { Prisma } from "@prisma/client";
 import { EventType } from "@prisma/client";
 
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const e = await prisma.event.findUnique({ where: { id } });
   if (!e) return new Response("Not found", { status: 404 });
   const base = env.R2_PUBLIC_BASE_URL?.replace(/\/$/, "");
@@ -14,7 +14,7 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
   return Response.json({ ...e, coverUrl });
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (session?.user?.email !== env.ADMIN_EMAIL) return new Response("Forbidden", { status: 403 });
   try {
@@ -38,7 +38,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       const d = new Date(body.endAt);
       if (!isNaN(d.getTime())) data.endAt = d;
     }
-    const { id } = params;
+    const { id } = await params;
     const e = await prisma.event.update({ where: { id }, data });
     return Response.json(e);
   } catch (e: unknown) {
@@ -47,10 +47,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (session?.user?.email !== env.ADMIN_EMAIL) return new Response("Forbidden", { status: 403 });
-  const { id } = params;
+  const { id } = await params;
   await prisma.event.delete({ where: { id } });
   return new Response(null, { status: 204 });
 }
