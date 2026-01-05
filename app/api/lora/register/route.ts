@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { NextRequest } from "next/server";
+export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   try {
