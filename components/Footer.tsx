@@ -34,7 +34,7 @@ const Footer = () => {
               Access our specialized LoRA nodes and start generating
               studio-quality anime assets today.
             </p>
-            <Link href="/auth">
+            <Link href="/api/auth/signin">
               <button className="group relative bg-black text-white px-8 py-4 font-black uppercase tracking-widest text-lg border-4 border-black hover:bg-white hover:text-black transition-colors w-full md:w-auto cursor-pointer">
                 JOIN THE NETWORK
                 <span className="absolute -right-4 -bottom-4 bg-yellow-400 text-black text-[10px] px-2 py-1 border-2 border-black group-hover:bg-white transition-colors">
