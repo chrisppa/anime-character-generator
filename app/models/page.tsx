@@ -255,6 +255,7 @@ export default function ModelLibrary() {
       <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6">
         {modelsWithStats.map((model) => (
           <ModelCard
+            id={model.id}
             key={model.id}
             imgSrc={model.src}
             name={model.name}
