@@ -2,7 +2,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
-import { Download, Star, Heart, MoreVertical, Zap, Search } from "lucide-react";
+import { Eye, Download, Star, Heart, Zap, Search } from "lucide-react";
 import * as models from "@/public/images";
 
 interface ModelStats {
@@ -42,8 +42,8 @@ const ModelCard = ({ id, imgSrc, name, type, stats }: ModelCardProps) => {
 
         {/* Hover Action Overlay - hidden on mobile, shown on desktop hover */}
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex items-center justify-center gap-4">
-          <Link href={id ? `/models/${id}` : "#"} className="bg-white p-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all">
-            <Download size={20} className="text-black" />
+          <Link href={id ? `/models/${id}` : "#"} className="bg-white p-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all" aria-label="View details">
+            <Eye size={20} className="text-black" />
           </Link>
           <button className="bg-white p-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all" aria-label="Favorite">
             <Heart size={20} className="text-pink-500 fill-current" />
@@ -61,7 +61,7 @@ const ModelCard = ({ id, imgSrc, name, type, stats }: ModelCardProps) => {
               {stats.rating}
             </span>
           </div>
-          <MoreVertical size={16} className="text-white cursor-pointer" />
+          {/* removed non-interactive 3-dots menu */}
         </div>
       </div>
 
@@ -97,7 +97,7 @@ const ModelCard = ({ id, imgSrc, name, type, stats }: ModelCardProps) => {
         {/* Mobile Action Buttons */}
         <div className="flex md:hidden gap-2 pt-2 border-t border-gray-100">
           <Link href={id ? `/models/${id}` : "#"} className="flex-1 flex items-center justify-center gap-1 bg-black text-white py-2 text-[10px] font-bold uppercase active:bg-gray-800">
-            <Download size={12} /> View
+            <Eye size={12} /> View
           </Link>
           <button className="flex items-center justify-center px-3 border-2 border-black active:bg-gray-100">
             <Heart size={14} className="text-pink-500" />

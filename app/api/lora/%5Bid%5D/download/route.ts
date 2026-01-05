@@ -14,4 +14,3 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     return new Response(JSON.stringify({ error: msg }), { status: 500 });
   }
 }
-

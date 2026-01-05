@@ -29,4 +29,3 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     return new Response(JSON.stringify({ error: msg }), { status: 500 });
   }
 }
-
