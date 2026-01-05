@@ -8,6 +8,7 @@ export async function GET() {
     const withUrls = list.map((l) => ({
       ...l,
       coverUrl: l.coverKey && base ? `${base}/${encodeURIComponent(l.coverKey)}` : null,
+      ratingAvg: l.ratingCount ? l.ratingSum / l.ratingCount : 0,
     }));
     return Response.json(withUrls);
   } catch (e: unknown) {

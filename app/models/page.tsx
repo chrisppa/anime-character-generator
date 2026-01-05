@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useMemo, useEffect } from "react";
 import Image, { StaticImageData } from "next/image";
+import Link from "next/link";
 import { Download, Star, Heart, MoreVertical, Zap, Search } from "lucide-react";
 import * as models from "@/public/images";
 
@@ -10,13 +11,14 @@ interface ModelStats {
 }
 
 interface ModelCardProps {
+  id?: string;
   imgSrc: StaticImageData | string;
   name: string;
   type: string;
   stats: ModelStats;
 }
 
-const ModelCard = ({ imgSrc, name, type, stats }: ModelCardProps) => {
+const ModelCard = ({ id, imgSrc, name, type, stats }: ModelCardProps) => {
   return (
     <div className="group relative bg-white border-2 md:border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all overflow-hidden flex flex-col">
       {/* --- Image Preview Section --- */}
@@ -40,10 +42,10 @@ const ModelCard = ({ imgSrc, name, type, stats }: ModelCardProps) => {
 
         {/* Hover Action Overlay - hidden on mobile, shown on desktop hover */}
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex items-center justify-center gap-4">
-          <button className="bg-white p-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all">
+          <Link href={id ? `/models/${id}` : "#"} className="bg-white p-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all">
             <Download size={20} className="text-black" />
-          </button>
-          <button className="bg-white p-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all">
+          </Link>
+          <button className="bg-white p-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all" aria-label="Favorite">
             <Heart size={20} className="text-pink-500 fill-current" />
           </button>
         </div>
@@ -94,9 +96,9 @@ const ModelCard = ({ imgSrc, name, type, stats }: ModelCardProps) => {
 
         {/* Mobile Action Buttons */}
         <div className="flex md:hidden gap-2 pt-2 border-t border-gray-100">
-          <button className="flex-1 flex items-center justify-center gap-1 bg-black text-white py-2 text-[10px] font-bold uppercase active:bg-gray-800">
-            <Download size={12} /> Download
-          </button>
+          <Link href={id ? `/models/${id}` : "#"} className="flex-1 flex items-center justify-center gap-1 bg-black text-white py-2 text-[10px] font-bold uppercase active:bg-gray-800">
+            <Download size={12} /> View
+          </Link>
           <button className="flex items-center justify-center px-3 border-2 border-black active:bg-gray-100">
             <Heart size={14} className="text-pink-500" />
           </button>
@@ -113,6 +115,7 @@ interface ModelItem {
   src: StaticImageData | string;
   name: string;
   type: string;
+  stats?: ModelStats;
 }
 
 export default function ModelLibrary() {
@@ -127,12 +130,16 @@ export default function ModelLibrary() {
       .then((r) => r.json())
       .then((list) => {
         if (!Array.isArray(list)) return;
-        type ApiLora = { id: string; name: string; coverUrl?: string | null };
+        type ApiLora = { id: string; name: string; coverUrl?: string | null; downloads?: number; ratingAvg?: number };
         const items: ModelItem[] = (list as ApiLora[]).map((l) => ({
           id: l.id,
           src: (l.coverUrl as string | undefined) || (models.not_found as StaticImageData),
           name: l.name,
           type: "LORA",
+          stats: {
+            downloads: String(l.downloads ?? 0),
+            rating: ((l.ratingAvg ?? 0)).toFixed(1),
+          },
         }));
         setDynamicLoras(items);
       })
@@ -162,6 +169,7 @@ export default function ModelLibrary() {
     };
 
     return modelList.map((model) => {
+      if (model.stats) return model;
       const hash = hashString(model.id);
       return {
         ...model,
@@ -247,6 +255,7 @@ export default function ModelLibrary() {
       <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6">
         {modelsWithStats.map((model) => (
           <ModelCard
+            id={model.id}
             key={model.id}
             imgSrc={model.src}
             name={model.name}

@@ -26,7 +26,7 @@ export const NavBar = () => {
     { href: "/models", label: "Models" },
     { href: "/events", label: "Events" },
     { href: "/changelog", label: "Changelog" },
-    { href: "/models/lora", label: "LoRAs" },
+    // { href: "/models/lora", label: "LoRAs" }, // removed; use /models and detail pages instead
     { href: "/lora/upload", label: "Upload LoRA" },
     {
       href: "https://twitter.com/kristuryasiima",

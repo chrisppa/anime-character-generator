@@ -34,6 +34,12 @@ model Lora {
   userId    String?
   user      User?    @relation(fields: [userId], references: [id])
   jobs      Job[]
+  // engagement
+  downloads   Int      @default(0)
+  ratingSum   Int      @default(0)
+  ratingCount Int      @default(0)
+  favorites   Favorite[]
+  ratings     Rating[]
   createdAt DateTime @default(now())
 }
 
@@ -93,4 +99,27 @@ model Asset {
   jobId     String
   job       Job      @relation(fields: [jobId], references: [id])
   createdAt DateTime @default(now())
+}
+
+model Favorite {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  loraId    String
+  lora      Lora     @relation(fields: [loraId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, loraId])
+}
+
+model Rating {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  loraId    String
+  lora      Lora     @relation(fields: [loraId], references: [id])
+  value     Int
+  createdAt DateTime @default(now())
+
+  @@unique([userId, loraId])
 }
