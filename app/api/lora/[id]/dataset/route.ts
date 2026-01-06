@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/db";
 import { getSignedGetUrl } from "@/lib/r2";
+import { NextRequest } from "next/server";
 
-export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const l = await prisma.lora.findUnique({ where: { id } });
@@ -13,4 +14,3 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     return new Response(JSON.stringify({ error: msg }), { status: 500 });
   }
 }
-

@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
+import { NextRequest } from "next/server";
 
-export async function POST(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (!session?.user?.email) return new Response("Unauthorized", { status: 401 });
   const { id } = await params;
@@ -20,4 +21,3 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
     return new Response(JSON.stringify({ error: msg }), { status: 500 });
   }
 }
-
