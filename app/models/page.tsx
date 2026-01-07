@@ -207,7 +207,7 @@ export default function ModelLibrary() {
         m.name,
         m.id,
         (m as ModelItem).uploader ?? "",
-        ...(((m as ModelItem).tags ?? []) as string[]),
+        m.type,
       ]
         .filter(Boolean)
         .map((s) => s.toString().toLowerCase());
