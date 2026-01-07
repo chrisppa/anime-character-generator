@@ -1,6 +1,6 @@
 "use client";
 import React from 'react';
-import { Link2, Filter, ListFilter, Search } from 'lucide-react';
+import { Link2 } from 'lucide-react';
 
 interface UpdateEntryProps {
   title: string;
