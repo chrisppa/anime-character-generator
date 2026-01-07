@@ -41,33 +41,11 @@ export default function Changelog(){
     <div className="min-h-screen bg-[#E2E2D1] pt-6 md:pt-12 pb-16 md:pb-32 px-3 md:px-6">
       <div className="max-w-4xl mx-auto">
         
-        {/* Simple Header Navigation - Borrowed from Civitai Layout */}
+        {/* Simple Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12 gap-4 md:gap-6">
           <h1 className="text-4xl sm:text-5xl md:text-7xl uppercase tracking-tighter text-black italic font-black">
             UPDATES
           </h1>
-
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3 w-full md:w-auto">
-            {/* Search Bar */}
-            <div className="relative flex-1 sm:flex-none sm:w-48 md:w-64">
-              <input 
-                type="text" 
-                placeholder="Search titles..." 
-                className="w-full bg-white border-2 border-black px-3 md:px-4 py-2 font-inter text-[9px] md:text-[10px] font-bold outline-none focus:bg-yellow-50"
-              />
-              <Search className="absolute right-2 md:right-3 top-2.5 text-gray-400" size={14} />
-            </div>
-            
-            {/* Filter Buttons */}
-            <div className="flex gap-2 md:gap-3">
-              <button className="flex-1 sm:flex-none bg-white border-2 border-black p-2 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all">
-                <ListFilter size={14} className="md:w-4 md:h-4 mx-auto" />
-              </button>
-              <button className="flex-1 sm:flex-none bg-white border-2 border-black px-3 md:px-4 py-2 font-inter text-[9px] md:text-[10px] font-black uppercase flex items-center justify-center gap-1.5 md:gap-2 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all whitespace-nowrap">
-                Filters <Filter size={12} className="md:w-3.5 md:h-3.5" />
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* Update Logs */}

@@ -73,7 +73,7 @@ const ModelCard = ({ id, imgSrc, name, type, stats }: ModelCardProps) => {
               {name.replace(/_/g, " ")}
             </h3>
             <p className="text-[9px] md:text-[10px] font-mono text-gray-500 mt-1">
-              BY: <span className="text-black font-bold">ANIMIND_CORE</span>
+              BY: <span className="text-black font-bold">ANIMIND ADMIN</span>
             </p>
           </div>
           <Zap
@@ -108,7 +108,7 @@ const ModelCard = ({ id, imgSrc, name, type, stats }: ModelCardProps) => {
   );
 };
 
-type FilterType = "ALL" | "CHECKPOINT" | "LORA" | "TEXTUAL-INV" | "V3_SPECIAL";
+type FilterType = "ALL" | "CHECKPOINT" | "LORA" | "VAE";
 
 interface ModelItem {
   id: string;
@@ -121,6 +121,7 @@ interface ModelItem {
 export default function ModelLibrary() {
   const [filter, setFilter] = useState<FilterType>("ALL");
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
+  const [query, setQuery] = useState<string>("");
 
   // Convert the imported object into an array we can loop through
   const [dynamicLoras, setDynamicLoras] = useState<ModelItem[]>([]);
@@ -185,9 +186,19 @@ export default function ModelLibrary() {
     "ALL",
     "CHECKPOINT",
     "LORA",
-    "TEXTUAL-INV",
-    "V3_SPECIAL",
+    "VAE",
   ];
+
+  const filteredModels = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return modelsWithStats.filter((m) => {
+      const passType = filter === "ALL" ? true : m.type === filter;
+      const passQuery = q
+        ? [m.name, m.id].some((s) => s.toLowerCase().includes(q))
+        : true;
+      return passType && passQuery;
+    });
+  }, [modelsWithStats, filter, query]);
 
   return (
     <div className="min-h-screen bg-[#E2E2D1] pt-6 md:pt-10 pb-12 md:pb-20 px-3 md:px-6">
@@ -217,6 +228,8 @@ export default function ModelLibrary() {
                 type="text"
                 placeholder="SEARCH_MODELS..."
                 className="bg-gray-100 border-2 border-black px-4 py-1 text-[10px] font-bold focus:bg-yellow-50 outline-none w-48 uppercase"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
               />
             </div>
           </div>
@@ -228,6 +241,8 @@ export default function ModelLibrary() {
                 type="text"
                 placeholder="SEARCH_MODELS..."
                 className="w-full bg-gray-100 border-2 border-black px-3 py-2 text-[10px] font-bold focus:bg-yellow-50 outline-none uppercase"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
               />
             </div>
           )}
@@ -253,7 +268,7 @@ export default function ModelLibrary() {
 
       {/* --- Grid System --- */}
       <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6">
-        {modelsWithStats.map((model) => (
+        {filteredModels.map((model) => (
           <ModelCard
             id={model.id}
             key={model.id}
