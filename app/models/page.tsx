@@ -16,9 +16,10 @@ interface ModelCardProps {
   name: string;
   type: string;
   stats: ModelStats;
+  uploader?: string | null;
 }
 
-const ModelCard = ({ id, imgSrc, name, type, stats }: ModelCardProps) => {
+const ModelCard = ({ id, imgSrc, name, type, stats, uploader }: ModelCardProps) => {
   return (
     <div className="group relative bg-white border-2 md:border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all overflow-hidden flex flex-col">
       {/* --- Image Preview Section --- */}
@@ -73,7 +74,7 @@ const ModelCard = ({ id, imgSrc, name, type, stats }: ModelCardProps) => {
               {name.replace(/_/g, " ")}
             </h3>
             <p className="text-[9px] md:text-[10px] font-mono text-gray-500 mt-1">
-              BY: <span className="text-black font-bold">ANIMIND ADMIN</span>
+              BY: <span className="text-black font-bold">{uploader ?? "ANIMIND ADMIN"}</span>
             </p>
           </div>
           <Zap
@@ -84,7 +85,7 @@ const ModelCard = ({ id, imgSrc, name, type, stats }: ModelCardProps) => {
 
         {/* Trigger Tags */}
         <div className="flex flex-wrap gap-1">
-          {["lora", "anime", "high-res"].map((tag) => (
+          {[type.toLowerCase()].map((tag) => (
             <span
               key={tag}
               className="text-[8px] md:text-[9px] font-bold px-1.5 py-0.5 border border-black/10 bg-gray-50 uppercase italic"
@@ -116,6 +117,7 @@ interface ModelItem {
   name: string;
   type: string;
   stats?: ModelStats;
+  uploader?: string | null;
 }
 
 export default function ModelLibrary() {
@@ -131,7 +133,14 @@ export default function ModelLibrary() {
       .then((r) => r.json())
       .then((list) => {
         if (!Array.isArray(list)) return;
-        type ApiLora = { id: string; name: string; coverUrl?: string | null; downloads?: number; ratingAvg?: number };
+        type ApiLora = {
+          id: string;
+          name: string;
+          coverUrl?: string | null;
+          downloads?: number;
+          ratingAvg?: number;
+          uploader?: string | null;
+        };
         const items: ModelItem[] = (list as ApiLora[]).map((l) => ({
           id: l.id,
           src: (l.coverUrl as string | undefined) || (models.not_found as StaticImageData),
@@ -141,6 +150,7 @@ export default function ModelLibrary() {
             downloads: String(l.downloads ?? 0),
             rating: ((l.ratingAvg ?? 0)).toFixed(1),
           },
+          uploader: l.uploader ?? null,
         }));
         setDynamicLoras(items);
       })
@@ -193,9 +203,15 @@ export default function ModelLibrary() {
     const q = query.trim().toLowerCase();
     return modelsWithStats.filter((m) => {
       const passType = filter === "ALL" ? true : m.type === filter;
-      const passQuery = q
-        ? [m.name, m.id].some((s) => s.toLowerCase().includes(q))
-        : true;
+      const haystack = [
+        m.name,
+        m.id,
+        (m as ModelItem).uploader ?? "",
+        ...(((m as ModelItem).tags ?? []) as string[]),
+      ]
+        .filter(Boolean)
+        .map((s) => s.toString().toLowerCase());
+      const passQuery = q ? haystack.some((s) => s.includes(q)) : true;
       return passType && passQuery;
     });
   }, [modelsWithStats, filter, query]);
@@ -276,6 +292,7 @@ export default function ModelLibrary() {
             name={model.name}
             type={model.type}
             stats={model.stats!}
+            uploader={(model as ModelItem).uploader}
           />
         ))}
       </div>
