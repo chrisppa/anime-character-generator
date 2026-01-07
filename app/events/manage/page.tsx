@@ -70,7 +70,7 @@ export default function ManageEventsPage() {
           </div>
         ) : (
           <>
-            <h1 className="font-druk-condensed text-4xl uppercase tracking-tight text-black mb-4">Create Event</h1>
+            <h1 className="font-druk-condensed text-4xl uppercase text-black mb-4">Create Event</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-xs font-mono uppercase">Title</label>
