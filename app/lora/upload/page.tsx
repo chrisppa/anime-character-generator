@@ -124,7 +124,7 @@ export default function LoraUploadPage() {
   return (
     <div className="min-h-screen bg-[#E2E2D1] py-10 px-4">
       <div className="max-w-2xl mx-auto bg-white border-4 border-black p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-        <h1 className="font-druk-condensed text-4xl uppercase tracking-tight text-black mb-4">Upload LoRA</h1>
+        <h1 className="font-druk-condensed text-4xl uppercase text-black mb-4">Upload LoRA</h1>
         <p className="text-sm text-gray-700 mb-6">Upload a .safetensors LoRA file. It will be stored in R2 and registered in the database. After upload, copy the LoRA ID to use in generation.</p>
 
         {status !== "authenticated" && (
