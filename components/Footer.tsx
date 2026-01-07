@@ -153,7 +153,7 @@ const Footer = () => {
             </div>
             <div className="h-4 w-px bg-white/30 hidden md:block" />
             <p className="text-[10px] font-mono text-white/50 tracking-widest uppercase">
-              © 2025 PROTOCOL_DECONSTRUCTION . ALL_RIGHTS_RESERVED
+              © 2026 ALL_RIGHTS_RESERVED
             </p>
           </div>
 
